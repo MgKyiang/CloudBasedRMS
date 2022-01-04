@@ -1,0 +1,314 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@model IPagedList<CloudBasedRMS.View.Controllers.ViewModel.OrderListViewModel>
+@{
+    ViewBag.Title = "Order List";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+    WebGrid grid = new WebGrid(source: Model, canSort: false);
+    @*search Option Here*@
+var searchbyList = new List<SelectListItem>
+    ()
+    {
+    new SelectListItem { Text="TableNo", Value = "TableNo" },
+    new SelectListItem { Text="Capacity",Value = "Capacity" },
+    new SelectListItem { Text="IsAvailable",Value = "IsAvailable" },
+    new SelectListItem { Text="Status",Value = "Status" },
+    new SelectListItem { Text="Employee",Value = "Employee" },
+    new SelectListItem { Text="CreatedDate",Value = "CreatedDate"}
+    };
+}
+<link href="~/Content/Base.css" rel="stylesheet" />
+<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li>
+            <i class="ace-icon fa fa-home home-icon"></i>
+            <a href="#">@Resource.Home</a>
+        </li>
+        <li>
+            <a href="#">@Resource.OrderingBilling</a>
+        </li>
+        <li class="active">@Resource.Order</li>
+    </ul><!-- /.breadcrumb -->
+</div>
+    @*Create/Update/Delete Status*@
+    @if (!string.IsNullOrEmpty(ViewBag.Status))
+    {
+        <div class="alert alert-success">
+            <label>@ViewBag.Status</label>
+        </div>
+    }
+    @*Searching Result*@
+    @if (!string.IsNullOrEmpty(ViewBag.SearchBy) && !string.IsNullOrEmpty(ViewBag.Search))
+    {
+        <div class="alert alert-success">
+
+            <ul>
+                <li><label>@Resource.SearchBy : @ViewBag.SearchBy</label></li>
+                <li><label>@Resource.SearchValue : @ViewBag.Search</label></li>
+            </ul>
+        </div>
+    }
+    @*Searching Status*@
+    @if ((!string.IsNullOrEmpty(ViewBag.Searchby1) && !string.IsNullOrEmpty(ViewBag.Search1)) ||
+                           (!string.IsNullOrEmpty(ViewBag.Searchby2) && !string.IsNullOrEmpty(ViewBag.Search2)) ||
+                           (!string.IsNullOrEmpty(ViewBag.Searchby3) && !string.IsNullOrEmpty(ViewBag.Search3)) ||
+                           (!string.IsNullOrEmpty(ViewBag.Searchby4) && !string.IsNullOrEmpty(ViewBag.Search4)))
+    {
+        <div class="alert alert-success">
+            <ul>
+
+                @if (!string.IsNullOrEmpty(ViewBag.Searchby1) && !string.IsNullOrEmpty(ViewBag.Search1))
+                {
+                    <li>@Resource.SearchBy @ViewBag.Searchby1 : @ViewBag.Search1</li>
+                }
+
+                @if (!string.IsNullOrEmpty(ViewBag.Searchby2) && !string.IsNullOrEmpty(ViewBag.Search2))
+                {
+                    <li>@Resource.SearchBy @ViewBag.Searchby2 : @ViewBag.Search2</li>
+                }
+
+                @if (!string.IsNullOrEmpty(ViewBag.Searchby3) && !string.IsNullOrEmpty(ViewBag.Search3))
+                {
+                    <li>@Resource.SearchBy @ViewBag.Searchby3 : @ViewBag.Search3</li>
+                }
+
+                @if (!string.IsNullOrEmpty(ViewBag.Searchby4) && !string.IsNullOrEmpty(ViewBag.Search4))
+                {
+                    <li>@Resource.SearchBy @ViewBag.Searchby4 : @ViewBag.Search4</li>
+                }
+
+            </ul>
+        </div>
+    }
+    @*Searching Panel*@
+    @using (Html.BeginForm("List", "Order", FormMethod.Get))
+    {
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <a id="filter"><strong>@Resource.Filter</strong></a> <span id="filterspan" class="glyphicon glyphicon-chevron-down"></span>
+                | @Html.ActionLink(Resource.Reload, "Index")
+            </div>
+            <div id="filtercollapse" style="display:none;" class="panel-body">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.Label(Resource.SearchBy)
+                            @Html.DropDownList("searchby1", searchbyList, "-- Select One --", new { @class = "form-control", id = "searchby" })
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBox("search1", string.Empty, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.Label(Resource.SearchBy)
+                            @Html.DropDownList("searchby2", searchbyList, "-- Select One --", new { @class = "form-control", id = "searchby" })
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBox("search2", string.Empty, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.Label(Resource.SearchBy)
+                            @Html.DropDownList("searchby3", searchbyList, "-- Select One --", new { @class = "form-control", id = "searchby" })
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBox("search3", string.Empty, new { @class = "form-control", id = "searchby" })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.Label(Resource.SearchBy)
+                            @Html.DropDownList("searchby4", searchbyList, "-- Select One --", new { @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBox("search4", string.Empty, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+
+                <input type="submit" value=@Resource.Search class="btn btn-success" />
+
+            </div>
+        </div>
+    }
+    <p>
+        @Html.ActionLink(Resource.BacktoList, "Index")
+    </p>
+    <div id="main" style="padding:25px; background-color:transparent;">
+        @grid.GetHtml(
+                htmlAttributes: new { id = "gridT", width = "500px" },
+                columns: grid.Columns(
+                        grid.Column("order.OrderNo", "Order No"),
+                        grid.Column(header: "Order Date", format: (item) => string.Format("{0:dd-MM-yyyy}", item.order.OrderDate)),
+                        grid.Column("order.Description", "Order Description"),
+                        grid.Column("order.IsParcel", "Is Parcel"),
+
+                        grid.Column(format: (item) =>
+                        {
+                            WebGrid subGrid = new WebGrid(source: item.orderDetails);
+                            return subGrid.GetHtml(
+                                htmlAttributes: new { id = "subT" },
+                                columns: subGrid.Columns(
+                                        subGrid.Column("FoodItems_Details.Description", "Food Item"),
+                                        subGrid.Column("Quantity", "Quantity"),
+                                        subGrid.Column("RatePerItems", "RatePerItems"),
+                                        subGrid.Column("Amount", "Amount")
+                                    )
+                                );
+                        })
+                    )
+                )
+    </div>
+@Html.PagedListPager(Model,
+    page => Url.Action("List", new { searchby1 = Request.QueryString["searchby1"], search1 = Request.QueryString["search1"], searchby2 = Request.QueryString["searchby2"], search2 = Request.QueryString["search2"], searchby3 = Request.QueryString["searchby3"], search3 = Request.QueryString["search3"], searchby4 = Request.QueryString["searchby4"], search4 = Request.QueryString["search4"], sortby = Request["sortby"], page }),
+    new PagedListRenderOptions { Display = PagedListDisplayMode.IfNeeded, DisplayItemSliceAndTotal = true })
+<style type="text/css">
+    #filter {
+    }
+
+        #filter:hover {
+            cursor: pointer;
+        }
+
+    #filterspan {
+        padding-left: 1px;
+        padding-right: 1px;
+    }
+</style>
+<style>
+        th, td {
+            padding: 5px;
+        }
+
+        th {
+            background-color: rgb(248, 248, 248);
+        }
+
+        #gridT, #gridT tr {
+            border: 1px solid #0D857B;
+        }
+
+        #subT, #subT tr {
+            border: 1px solid #f3f3f3;
+        }
+
+        #subT {
+            margin: 0px 0px 0px 10px;
+            padding: 5px;
+            width: 95%;
+        }
+
+            #subT th {
+                font-size: 12px;
+            }
+
+        .hoverEff {
+            cursor: pointer;
+        }
+
+            .hoverEff:hover {
+                background-color: rgb(248, 242, 242);
+            }
+
+        .expand {
+            background-image: url(/Images/pm.png);
+            background-position-x: -22px;
+            background-repeat: no-repeat;
+        }
+
+        .collapse {
+            background-image: url(/Images/pm.png);
+            background-position-x: -2px;
+            background-repeat: no-repeat;
+        }
+    </style>
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/assets/js/jquery-1.12.4.min.js")
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var size = $("#main #gridT > thead > tr >th").size(); // get total column
+                $("#main #gridT > thead > tr >th").last().remove(); // remove last column
+                $("#main #gridT > thead > tr").prepend("<th></th>"); // add one column at first for collapsible column
+                $("#main #gridT > tbody > tr").each(function (i, el) {
+                    $(this).prepend(
+                            $("<td></td>")
+                            .addClass("expand")
+                            .addClass("hoverEff")
+                            .attr('title', "click for show/hide")
+                        );
+
+                    //Now get sub table from last column and add this to the next new added row
+                    var table = $("table", this).parent().html();
+                    //add new row with this subtable
+                    $(this).after("<tr><td></td><td style='padding:5px; margin:0px;' colspan='" + (size - 1) + "'>" + table + "</td></tr>");
+                    $("table", this).parent().remove();
+                    // ADD CLICK EVENT FOR MAKE COLLAPSIBLE
+                    $(".hoverEff", this).live("click", function () {
+                        $(this).parent().closest("tr").next().slideToggle(100);
+                        $(this).toggleClass("expand collapse");
+                    });
+                });
+
+                //by default make all subgrid in collapse mode
+                $("#main #gridT > tbody > tr td.expand").each(function (i, el) {
+                    $(this).toggleClass("expand collapse");
+                    $(this).parent().closest("tr").next().slideToggle(100);
+                });
+
+            });
+        </script>
+        @*Search Function Script*@
+        <script type="text/javascript">
+        $(document).ready()
+        {
+            $('select').val('');
+            $('input[type="text"]').val('');
+
+            //Searchby Dropdown Change Event
+            $('select').change(function () {
+                //currenc select value
+                var value = $(this).val();
+                //current select name
+                var search = $(this).attr('name');
+                //convert to search textbox name
+                search = search.replace('searchby', 'search');
+                if (value == '' || value == null || value == undefined) {
+                    $('input[name="' + search + '"]').val('');
+                }
+                if (value == 'CreatedDate') {
+                   // var regex = "\\d[1-12]{1,2}/\\d[1-31]{1,2}/\\d{4}";
+                   // $('input[name="' + search + '"]').attr('placeholder', 'MM/DD/YYYY');
+                   // $('input[name="' + search + '"]').attr('pattern', regex);
+                    $('input[name="' + search + '"]').attr('type', 'Date');
+                }
+                else {
+                   // $('input[name="' + search + '"]').removeAttr('placeholder');
+                   // $('input[name="' + search + '"]').removeAttr('pattern');
+                    $('input[name="' + search + '"]').attr('type', 'text');
+                }
+            });
+
+            $('#filter').on('click', function () {
+
+                if ($('#filterspan').hasClass('glyphicon glyphicon-chevron-down')) {
+
+                    $('#filterspan').removeClass('glyphicon glyphicon-chevron-down');
+
+                    $('#filterspan').addClass('glyphicon glyphicon-chevron-up');
+
+                    $('#filtercollapse').css("display", "block");
+                }
+                else {
+                    $('#filterspan').removeClass('glyphicon glyphicon-chevron-up');
+
+                    $('#filterspan').addClass('glyphicon glyphicon-chevron-down');
+
+                    $('#filtercollapse').css("display", "none");
+                }
+            })
+        }
+</script>
+    }

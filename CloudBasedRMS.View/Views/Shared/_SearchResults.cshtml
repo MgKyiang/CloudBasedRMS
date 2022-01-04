@@ -1,0 +1,11 @@
+﻿@model CloudBasedRMS.Core.SearchResults
+<div>Results</div>
+<ul>
+    @if (Model != null) {
+    foreach (var item in Model.category)
+        {
+        <li>@item.Description</li>
+        }
+    }
+    
+</ul>

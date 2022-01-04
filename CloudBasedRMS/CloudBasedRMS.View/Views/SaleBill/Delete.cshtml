@@ -1,0 +1,100 @@
+﻿@model CloudBasedRMS.View.Controllers.ViewModel.SaleBillViewModel
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li>
+            <i class="ace-icon fa fa-home home-icon"></i>
+            <a href="#">@Resource.Home</a>
+        </li>
+        <li class="active">@Resource.OrderingBilling</li>
+        <li class="active">@Resource.SaleBill</li>
+    </ul><!-- /.breadcrumb -->
+</div>
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.SaleBillNo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SaleBillNo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SaleBillDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SaleBillDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EmployeeID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Employee.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OrderMasterID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OrderMaster.OrderNo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CustomerID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Customer.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Amount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Amount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Tax)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Tax)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Discount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Discount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NetAmount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NetAmount)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+         @Html.HiddenFor(model=>model.SaleBillID)
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

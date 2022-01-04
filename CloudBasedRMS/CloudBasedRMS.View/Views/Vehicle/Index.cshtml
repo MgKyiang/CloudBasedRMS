@@ -1,0 +1,64 @@
+﻿@model IEnumerable<CloudBasedRMS.Core.Vehicle>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li>
+            <i class="ace-icon fa fa-home home-icon"></i>
+            <a href="#">@Resource.Home</a>
+        </li>
+        <li class="active">@Resource.MasterSetUp</li>
+        <li class="active">@Resource.Vehicle</li>
+    </ul><!-- /.breadcrumb -->
+</div>
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>Action</th>
+        <th>
+            @Html.DisplayNameFor(model => model.RegistrationNo)
+        </th>
+        <th>
+        Vehicle Type
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th>@Html.DisplayNameFor(model=>model.UpdatedDate)</th>
+       
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            <a href="@Url.Action("Edit", "Vehicle", new { id = item.VehicleID })" class="tooltip-success" data-rel="tooltip" title="Edit">
+                <span class="green">
+                    <i class="ace-icon fa fa-pencil-square-o bigger-120"></i>
+                </span>
+            </a>
+            <a href="@Url.Action("Delete", "Vehicle", new { id = item.VehicleID })" class="tooltip-error" data-rel="tooltip" title="Delete">
+                <span class="red">
+                    <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                </span>
+            </a>
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.RegistrationNo)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.VehicleType.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UpdatedDate)
+        </td>
+        
+    </tr>
+}
+</table>

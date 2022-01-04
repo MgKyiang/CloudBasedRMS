@@ -1,0 +1,78 @@
+﻿@model CloudBasedRMS.View.Controllers.ViewModel.AuthorizationsViewModel
+@{
+    ViewBag.Title = "Authorization";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li>
+            <i class="ace-icon fa fa-home home-icon"></i>
+            <a href="#">@Resource.Home</a>
+        </li>
+
+        <li>
+            <a href="#">@Resource.AdminSetUp</a>
+        </li>
+        <li class="active">@Resource.AuthorizationAssignment /@Resource.Create Manually</li>
+    </ul><!-- /.breadcrumb -->
+</div>
+<hr />
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.RoleID, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("RoleID", (SelectList)ViewBag.roles, "-- Select One -- ", new { @class = "col-xs-10 col-sm-5" })
+                @Html.ValidationMessageFor(model => model.RoleID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ControllerName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.ControllerName, new SelectList(ViewBag.controllerName as System.Collections.IEnumerable, "ControllerName", "ControllerName"), "--Select One--", new { id = "ddlControllerName", @class = "col-xs-10 col-sm-5" })
+                @Html.ValidationMessageFor(model => model.ControllerName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.ActionName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+               @Html.DropDownListFor(model => model.ActionName,new SelectList(ViewBag.actionName as System.Collections.IEnumerable, "ActionName", "ActionName"), "--Select One--", new { id = "ddlActionName", @class = "col-xs-10 col-sm-5" })
+                @Html.ValidationMessageFor(model => model.ActionName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.IsAllow, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.IsAllow)
+                    @Html.ValidationMessageFor(model => model.IsAllow, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.UseLog, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.UseLog)
+                    @Html.ValidationMessageFor(model => model.UseLog, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="@Resource.Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+<div>
+    @Html.ActionLink(@Resource.BacktoList, "Index")
+</div>
+

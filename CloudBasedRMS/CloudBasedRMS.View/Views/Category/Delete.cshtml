@@ -1,0 +1,51 @@
+﻿@model CloudBasedRMS.View.Controllers.ViewModel.CategoryViewModel
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li>
+            <i class="ace-icon fa fa-home home-icon"></i>
+            <a href="#">@Resource.Home</a>
+        </li>
+
+        <li>
+            <a href="#">@Resource.MasterSetUp</a>
+        </li>
+        <li class="active">@Resource.Category/ Delete</li>
+    </ul><!-- /.breadcrumb -->
+</div>
+<div class="alert alert-danger">
+   @Resource.Areyousureyouwanttodeletethis
+</div>
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Code)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Code)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.CategoryID)
+        <div class="form-actions no-color">
+            <input type="submit" value="@Resource.Delete" class="btn btn-default" /> |
+            @Html.ActionLink(@Resource.BacktoList, "Index")
+        </div>
+    }
+</div>

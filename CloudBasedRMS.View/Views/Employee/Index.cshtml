@@ -1,0 +1,319 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@model IPagedList<CloudBasedRMS.Core.Employee>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+    @*search Option Here*@
+var searchbyList = new List<SelectListItem>()
+    {
+        new SelectListItem { Text=Resource.EmployeeNo, Value = "EmployeeNo" },
+        new SelectListItem { Text=Resource.EmployeeName,Value = "Name" },
+        new SelectListItem { Text=Resource.UserName,Value = "CreatedUserName" },
+        new SelectListItem { Text=Resource.CreatedDate,Value = "CreatedDate" }
+    };
+}
+<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li>
+            <i class="ace-icon fa fa-home home-icon"></i>
+            <a href="#">@Resource.Home</a>
+        </li>
+        <li>
+            <a href="#">@Resource.Member</a>
+        </li>
+        <li class="active">@Resource.Employee</li>
+    </ul><!-- /.breadcrumb -->
+</div>
+    @*Searching Result*@
+    @if (!string.IsNullOrEmpty(ViewBag.SearchBy) && !string.IsNullOrEmpty(ViewBag.Search))
+    {
+        <div class="alert alert-success">
+
+            <ul>
+                <li><label>Search By : @ViewBag.SearchBy</label></li>
+                <li><label>Search Value : @ViewBag.Search</label></li>
+            </ul>
+        </div>
+    }
+    @*Searching Status*@
+    @if ((!string.IsNullOrEmpty(ViewBag.Searchby1) && !string.IsNullOrEmpty(ViewBag.Search1)) ||
+                                 (!string.IsNullOrEmpty(ViewBag.Searchby2) && !string.IsNullOrEmpty(ViewBag.Search2)) ||
+                                 (!string.IsNullOrEmpty(ViewBag.Searchby3) && !string.IsNullOrEmpty(ViewBag.Search3)) ||
+                                 (!string.IsNullOrEmpty(ViewBag.Searchby4) && !string.IsNullOrEmpty(ViewBag.Search4)))
+    {
+        <div class="alert alert-success">
+            <ul>
+
+                @if (!string.IsNullOrEmpty(ViewBag.Searchby1) && !string.IsNullOrEmpty(ViewBag.Search1))
+                {
+                    <li>Search by @ViewBag.Searchby1 : @ViewBag.Search1</li>
+                }
+
+                @if (!string.IsNullOrEmpty(ViewBag.Searchby2) && !string.IsNullOrEmpty(ViewBag.Search2))
+                {
+                    <li>Search by @ViewBag.Searchby2 : @ViewBag.Search2</li>
+                }
+
+                @if (!string.IsNullOrEmpty(ViewBag.Searchby3) && !string.IsNullOrEmpty(ViewBag.Search3))
+                {
+                    <li>Search by @ViewBag.Searchby3 : @ViewBag.Search3</li>
+                }
+
+                @if (!string.IsNullOrEmpty(ViewBag.Searchby4) && !string.IsNullOrEmpty(ViewBag.Search4))
+                {
+                    <li>Search by @ViewBag.Searchby4 : @ViewBag.Search4</li>
+                }
+
+            </ul>
+        </div>
+    }
+
+    @*Searching Panel*@
+    @using (Html.BeginForm("Index", "Employee", FormMethod.Get))
+    {
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <a id="filter"><strong>@Resource.Filter</strong></a> <span id="filterspan" class="glyphicon glyphicon-chevron-down"></span>
+                | @Html.ActionLink(Resource.Reload, "Index")
+            </div>
+            <div id="filtercollapse" style="display:none;" class="panel-body">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.Label(Resource.SearchBy)
+                            @Html.DropDownList("searchby1", searchbyList, "-- Select One --", new { @class = "form-control", id = "searchby" })
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBox("search1", string.Empty, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.Label(Resource.SearchBy)
+                            @Html.DropDownList("searchby2", searchbyList, "-- Select One --", new { @class = "form-control", id = "searchby" })
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBox("search2", string.Empty, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.Label(Resource.SearchBy)
+                            @Html.DropDownList("searchby3", searchbyList, "-- Select One --", new { @class = "form-control", id = "searchby" })
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBox("search3", string.Empty, new { @class = "form-control", id = "searchby" })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.Label(Resource.SearchBy)
+                            @Html.DropDownList("searchby4", searchbyList, "-- Select One --", new { @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBox("search4", string.Empty, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+
+                <input type="submit" value="Search" class="btn btn-success" />
+
+            </div>
+        </div>
+    }
+<p>
+    @Html.ActionLink(Resource.Create, "Create")||@Html.ActionLink(Resource.ExportToExcel, "ExportToExcel")||@Html.ActionLink(Resource.ExportToCSV, "ExportToCSV")||<a href="~/AspxReportViewer/Report.aspx">Report</a>
+</p>
+<div class="table-header">
+  @Resource.KeepingEmployeeRecordCount<label>(@Model.Count())Employee(s).</label>
+</div>
+<table class="table  table-bordered table-hover" id="tblEmployeeList">
+    <tr>
+        <th>Action</th>        
+        <th>
+            @Html.ActionLink(Resource.EmployeeNo, "index", new { sortby = ViewBag.EmployeeNoSortby, searchby1 = Request.QueryString["searchby1"], search1 = Request.QueryString["search1"], searchby2 = Request.QueryString["searchby2"], search2 = Request.QueryString["search2"], searchby3 = Request.QueryString["searchby3"], search3 = Request.QueryString["search3"], searchby4 = Request.QueryString["searchby4"], search4 = Request.QueryString["search4"] })
+        </th>
+        <th>
+            @Html.ActionLink(Resource.EmployeeName, "index", new { sortby = ViewBag.NameSortby, searchby1 = Request.QueryString["searchby1"], search1 = Request.QueryString["search1"], searchby2 = Request.QueryString["searchby2"], search2 = Request.QueryString["search2"], searchby3 = Request.QueryString["searchby3"], search3 = Request.QueryString["search3"], searchby4 = Request.QueryString["searchby4"], search4 = Request.QueryString["search4"] })
+        </th>      
+        <th>
+            <i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i>
+            @Resource.JoinDate
+        </th>
+        <th>
+            <i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i>
+           @Resource.DateofBirth
+        </th>        
+        <th>
+            @Html.ActionLink(Resource.Rank, "index", new { sortby = ViewBag.RankSortby, searchby1 = Request.QueryString["searchby1"], search1 = Request.QueryString["search1"], searchby2 = Request.QueryString["searchby2"], search2 = Request.QueryString["search2"], searchby3 = Request.QueryString["searchby3"], search3 = Request.QueryString["search3"], searchby4 = Request.QueryString["searchby4"], search4 = Request.QueryString["search4"] })
+        </th>
+        <th>
+           @Resource.WorkType
+        </th>
+        <th>
+            <i class="ace-icon fa fa-home bigger-110 hidden-480"></i>
+           @Resource.Address
+        </th>
+        <th>
+            @Resource.PhoneNo
+        </th>
+        <th>
+           @Resource.MobileNo
+        </th>
+        <th>
+            @Resource.EmployeePhoto
+        </th>
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            <a href="@Url.Action("Edit", "Employee", new { id = item.EmployeeID })" class="tooltip-success" data-rel="tooltip" title="Edit">
+                <span class="green">
+                    <i class="ace-icon fa fa-pencil-square-o bigger-120"></i>
+                </span>
+            </a>
+            <a href="@Url.Action("Delete", "Employee", new { id = item.EmployeeID })" class="tooltip-error" data-rel="tooltip" title="Delete">
+                <span class="red">
+                    <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                </span>
+            </a>
+        </td>      
+        <td>
+            @Html.DisplayFor(modelItem => item.EmployeeNo)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+            
+        </td>        
+        <td>
+            @Html.DisplayFor(modelItem => item.JoinDate)
+
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DOB)
+        </td>       
+        <td>
+            @Html.DisplayFor(modelItem => item.Rank.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.WorkType)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Address.City)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PhoneNo)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.MobileNo)
+        </td>    
+        <td>
+            <img src="@Url.Content(item.ImagePath)" width="100" height="100" class="user" />
+        </td>   
+    </tr>
+}
+</table>  
+@Html.PagedListPager(Model,
+    page => Url.Action("Index", new { searchby1 = Request.QueryString["searchby1"], search1 = Request.QueryString["search1"], searchby2 = Request.QueryString["searchby2"], search2 = Request.QueryString["search2"], searchby3 = Request.QueryString["searchby3"], search3 = Request.QueryString["search3"], searchby4 = Request.QueryString["searchby4"], search4 = Request.QueryString["search4"], sortby = Request["sortby"], page }),
+    new PagedListRenderOptions { Display = PagedListDisplayMode.IfNeeded, DisplayItemSliceAndTotal = true })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/js/jquery.dataTables.min.js")
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#tblEmployeeList').DataTable({
+        dom: "Bfrtip",//display buttons
+        //desiable sorting for column by specifying index order
+        'columnDefs': [
+                { orderable: false, targets: [2, 3, 6] }
+        ],
+        select:true,
+        //buttons
+        buttons: [
+                    {
+                        extend: "copy",
+                        className: "btn-sm"
+                    },
+                    {
+                        extend: "csv",
+                        className: "btn-sm"
+                    },
+                    {
+                        extend: "excel",
+                        className: "btn-sm"
+                    },
+                    {
+                        extend: "pdfHtml5",
+                        className: "btn-sm"
+                    },
+                    {
+                        extend: "print",
+                        className: "btn-sm"
+                    },
+        ],
+        responsive: true,
+        "pageLength": 10,
+        "pagingType": "full_numbers"
+    });
+  });
+</script>
+<script type="text/javascript">
+        $(document).ready()
+        {
+            $('select').val('');
+            $('input[type="text"]').val('');
+
+            //Searchby Dropdown Change Event
+            $('select').change(function () {
+
+                //currenc select value
+                var value = $(this).val();
+                //current select name
+                var search = $(this).attr('name');
+                //convert to search textbox name
+                search = search.replace('searchby', 'search');
+
+                if (value == '' || value == null || value == undefined) {
+                    $('input[name="' + search + '"]').val('');
+                }
+
+                if (value == 'CreatedDate') {
+
+                   // var regex = "\\d[1-12]{1,2}/\\d[1-31]{1,2}/\\d{4}";
+                   // $('input[name="' + search + '"]').attr('placeholder', 'MM/DD/YYYY');
+                   // $('input[name="' + search + '"]').attr('pattern', regex);
+                    $('input[name="' + search + '"]').attr('type', 'Date');
+                }
+                else {
+                   // $('input[name="' + search + '"]').removeAttr('placeholder');
+                   // $('input[name="' + search + '"]').removeAttr('pattern');
+                    $('input[name="' + search + '"]').attr('type', 'text');
+                }
+
+            });
+
+            $('#filter').on('click', function () {
+
+                if ($('#filterspan').hasClass('glyphicon glyphicon-chevron-down')) {
+
+                    $('#filterspan').removeClass('glyphicon glyphicon-chevron-down');
+
+                    $('#filterspan').addClass('glyphicon glyphicon-chevron-up');
+
+                    $('#filtercollapse').css("display", "block");
+
+                }
+                else {
+
+                    $('#filterspan').removeClass('glyphicon glyphicon-chevron-up');
+
+                    $('#filterspan').addClass('glyphicon glyphicon-chevron-down');
+
+                    $('#filtercollapse').css("display", "none");
+
+                }
+            })
+        }
+</script>
+}

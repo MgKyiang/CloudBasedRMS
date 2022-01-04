@@ -1,0 +1,88 @@
+﻿@model CloudBasedRMS.View.Controllers.ViewModel.SaleBillReportByFromToDateViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li>
+            <i class="ace-icon fa fa-home home-icon"></i>
+            <a href="#">@Resource.DailyReport</a>
+        </li>
+        <li>
+            <a href="#">@Resource.SaleBillingreportbysalebilldate</a>
+        </li>
+    </ul><!-- /.breadcrumb -->
+</div>
+@*Create/Update/Delete Status*@
+@if (!string.IsNullOrEmpty(ViewBag.Status))
+{
+    <div class="alert alert-success">
+        <label>@ViewBag.Status</label>
+    </div>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/assets/js/jquery-ui-1.12.1.min.js")
+    <script type="text/javascript">
+        $("#txtFromDate").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0",
+            dateFormat: 'mm/dd/yy'
+        });
+        $("#txtToDate").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0",
+            dateFormat: 'mm/dd/yy'
+        });
+        $('#txtFromDate').removeAttr("data-val-date");
+        $('#txtToDate').removeAttr("data-val-date");
+    function SimpleInNewWin() {
+        window.open("../FromMvc/ShowSimple");
+    }
+    function GenericInNewWin() {
+        var oParam = { "FromDate": "", "ToDate": "" };
+        oParam.FromDate = $("#txtFromDate").val();
+        oParam.ToDate = $("#txtToDate").val();
+        $.ajax({
+            url: '../../FromMvc/ShowGenericRptInNewWin',
+            data: JSON.stringify(oParam),
+            type: 'POST',
+            contentType: 'application/json;',
+            dataType: 'json',
+            success: function () {
+                window.open("../GenericReportViewer/ShowGenericRpt", 'mywindow', 'fullscreen=yes, scrollbars=auto');
+            }
+        });
+    }
+    </script>
+    }
+@using (Html.BeginForm("SaleBillBySaleDateReport", "DailyReport"))
+{
+    <div class="form-horizontal">
+        <div class="form-group">
+            @Html.LabelFor(model => model.SaleBillFromDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.SaleBillFromDate, new { @class = "col-xs-10 col-sm-5", @id = "txtFromDate", @placeholder = "dd/mm/yyyy" })
+                @Html.ValidationMessageFor(model => model.SaleBillFromDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.SaleBillToDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.SaleBillToDate, new { @class = "col-xs-10 col-sm-5", @id = "txtToDate", @placeholder = "dd/mm/yyyy" })
+                @Html.ValidationMessageFor(model => model.SaleBillToDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Preview" class="btn btn-success" id="btnpreview" />
+                <input type="button" value="Rpt from MVC with new window" onclick="GenericInNewWin()" class="btn-primary" />
+            </div>
+        </div>
+        </div>
+}
+
+

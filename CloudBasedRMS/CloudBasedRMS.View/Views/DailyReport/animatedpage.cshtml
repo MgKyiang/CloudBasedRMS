@@ -1,0 +1,36 @@
+﻿@{
+    ViewBag.Title = "animatedpage";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>WOW</title>
+</head>
+<body>
+    <div id="container">
+        <header>
+            <h1>WOW.js</h1>
+        </header>
+        <div id="main">
+            <section class="wow fadeInDown" style="background-color: #f1c40f;">I am Yellow Color!</section>
+            <section class="wow pulse" style="background-color: #e74c3c;" data-wow-iteration="infinite" data-wow-duration="1500ms">i am data-wow-iteration with infinate</section>
+            <section class="section--purple wow slideInRight" data-wow-delay="2s">I am purple color!</section>
+            <section class="section--blue wow bounceInLeft" data-wow-offset="300">I am Blue Color!</section>
+            <section class="section--green wow slideInLeft" data-wow-duration="4s">I am Green Color!</section>
+            <section class="wow slideInRight" data-wow-offset="10" style="background-color:blue" data-wow-duration="10s">I am blue Color! </section>
+            <button id="moar" style="background-color:aquamarine">LOAD MOAR!!</button>
+            <button id="btnclickme" class="wow fadeInRight">Show msg</button>
+        </div>
+    </div>
+    <div>
+        <img src="akog02.jpg" class="wow pulse" data-wow-iteration="infinite" data-wow-duration="1500ms" />
+    </div>
+    <div>
+        <img src="akog02.jpg" class="section--green wow slideInLeft" data-wow-iteration="4s" data-wow-duration="10" />
+    </div>    
+</body>
+</html>
+
+

@@ -1,0 +1,33 @@
+﻿For Database Migration with Code First Apporach
+1)Enable-Migrations -Force
+2)Add-Migraiton [migration name]
+3)Update-database
+------------------------------------------------------------------------------------------------------
+For Seeding Configuration!
+Fill this Code inside of [namespace CloudBasedRMS.Core.Migrations]{}
+------------------------------------------------------------------------------------------------------
+	using SeedConfig;
+	using System.Data.Entity.Migrations;
+	internal sealed class Configuration : DbMigrationsConfiguration<CloudBasedRMS.Core.ApplicationDbContext>
+	{
+		public Configuration()
+		{
+			AutomaticMigrationsEnabled = true;
+		}
+
+		protected override void Seed(CloudBasedRMS.Core.ApplicationDbContext context)
+		{
+			//Default Admin/User Account and Roles
+			IdentitySeed.SeedData(context);
+			Authorizationseed.SeedData(context);
+			//Default ApplicationSetting Data
+			ApplicationSettingSeed.SeedData(context);
+		}
+	}
+	---------------------------------------------------
+	//get the role record by the userid
+IdentityUserManager.Users
+					  .Where(u => u.Id == userId)
+					  .SelectMany(u => u.Roles)
+					  .Join(IdentityRoleManager.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => r)
+					  .ToList();//

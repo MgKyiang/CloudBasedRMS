@@ -1,0 +1,604 @@
+﻿@model CloudBasedRMS.View.Controllers.ViewModel.OrderMasterViewModel
+@{
+    ViewBag.Title = "Create";
+   Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li>
+            <i class="ace-icon fa fa-home home-icon"></i>
+            <a href="#">@Resource.Home</a>
+        </li>
+        <li>
+            <a href="#">@Resource.OrderingBilling</a>
+        </li>
+        <li class="active">@Resource.Order</li>
+    </ul><!-- /.breadcrumb -->
+</div>
+    @using (Html.BeginForm("Create", "Order", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <fieldset id="OrderMasterHeader">
+            <div class="form-horizontal">
+                <h4>Order Master</h4>
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.OrderMasterID)
+                @Html.HiddenFor(model => model.OrderNo)
+                <div class="form-group">
+                    @Html.LabelFor(model => model.OrderNo, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.OrderNo, new { htmlAttributes = new { @class = "col-xs-10 col-sm-5", disabled = "disabled" } })
+                        @Html.ValidationMessageFor(model => model.OrderNo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.OrderDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.OrderDate, new { @class = "col-xs-10 col-sm-5", @id = "txtOrderDate", @placeholder = "dd/mm/yyyy" })
+                        @Html.ValidationMessageFor(model => model.OrderDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "col-xs-10 col-sm-5" } })
+                        @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IsParcel, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        <input type="checkbox" id="chkStatus" checked="checked" /> 
+                        <div class="checkbox">
+                            @Html.EditorFor(model => model.IsParcel)
+                            @Html.ValidationMessageFor(model => model.IsParcel, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" id="tablediv">
+                    @Html.LabelFor(model => model.TableID, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.DropDownList("TableID", (SelectList)ViewBag.tables, new { @id = "ddltable", @class = "col-xs-10 col-sm-5" })
+                        @Html.ValidationMessageFor(model => model.TableID, "", new { @class = "text-danger" })
+                        <a class="glyphicon-plus btn btn-sm" title="Create New Table" data-toggle="modal" data-target="#dialogNewTable"></a>       
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title">Order Items</div>
+            </div>
+            <div class="panel-body" id="ItemBody">
+                <div class="form-group">
+                    <label class="control-label col-md-2">@Resource.Category</label>
+                    <div class="col-md-10">
+                        @Html.DropDownList("CategoryID", (SelectList)ViewBag.categories, new { @id = "ddlcategory", @class = "col-xs-10 col-sm-5" })
+                        <span class="field-validation-valid text-danger" id="rmsCategory"></span>
+                        <a class="glyphicon-plus btn btn-sm" title="Create New categories" data-toggle="modal" data-target="#dialogNewCategory"></a>       
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">@Resource.FoodItem</label>
+                    <div class="col-md-10">
+                        @Html.DropDownList("FoodItemID", (SelectList)ViewBag.foodItems, new { @id = "ddlfooditems", @class = "col-xs-10 col-sm-5" })
+                        <span class="field-validation-valid text-danger" id="rmsFoodItems"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">@Resource.Quantity</label>
+                    <div class="col-md-10">
+                        <input type="number" class="col-xs-10 col-sm-5" id="txtQuantity">
+                        <span class="field-validation-valid text-danger" id="rmsQuantity"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">@Resource.RatePerItems</label>
+                    <div class="col-md-10">
+                        <input type="number" class="col-xs-10 col-sm-5" id="txtRatePerItems" disabled = "disabled">
+                        <span class="field-validation-valid text-danger" id="rmsRatePerItems"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">@Resource.Amount</label>
+                    <div class="col-md-10">
+                        <input type="number" class="col-xs-10 col-sm-5" id="txtAmount" readonly="readonly" disabled="disabled">
+                        <span class="field-validation-valid text-danger" id="rmsAmount"></span>
+                    </div>
+                </div>
+                <hr />
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="button" id="btnAdd" value="Add" style="width:80px" class="btn btn-success" />
+                        <input type="button" id="btnCancel_" value="Cancel" width:80px" class="btn btn-primary" />
+                    </div>
+                </div>
+                <div id="ItemTable" class="col-md-offset-2 col-md-10">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="@Resource.Create" class="btn btn-warning" style="padding:10px 20px" id="btnCreate" />
+            </div>
+        </div>
+        <div>
+            @Html.ActionLink(Resource.BacktoList, "Index")
+        </div>
+    }
+@*Create dialogNewCategory*@
+<div id="dialogNewCategory" class="modal fade" role="dialog" style="margin-left:35%;margin-right:35%;margin-top:3%;overflow:hidden;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 id="dialogHeader">Create New Category</h4>
+        </div>
+        <div class="modal-body">
+            <span id="lblMessage" style="color:dodgerblue;font-weight:bold;"></span>
+            <div class="form-group">
+                @Html.Label("Code")
+                @Html.TextBox("Code", string.Empty, new { @class = "col-xs-10 col-sm-5", id = "txtCode", required = "required" })
+                <span id="errorCode" style="color:red;font-weight:bold;"></span>
+            </div>
+            <div class="form-group">
+                @Html.Label("Description")
+                @Html.TextBox("Description", string.Empty, new { @class = "col-xs-10 col-sm-5", id = "txtDescription", required = "required" })
+                <span id="errorDescription" style="color:red;font-weight:bold;"></span>
+            </div>                      
+            <input id="btnCreateCategory" type="submit" class="btn btn-success" value="Create" />
+            <input type="submit" class="btn btn-danger" value="Cancel" data-dismiss="modal" />
+        </div>
+    </div>
+</div>
+@*Create dialog new table*@
+<div id="dialogNewTable" class="modal fade" role="dialog" style="margin-left:35%;margin-right:35%;margin-top:3%;overflow:hidden;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 id="dialogHeader">Create New Table</h4>
+        </div>
+        <div class="modal-body">
+            <span id="lblMessage" style="color:dodgerblue;font-weight:bold;"></span>
+            <div class="form-group">
+                @Html.Label("TableNo")
+                @Html.TextBox("TableNo", string.Empty, new { @class = "col-xs-10 col-sm-5", id = "txtTableNo", required = "required" })
+                <span id="errorTableNo" style="color:red;font-weight:bold;"></span>
+            </div>
+            <div class="form-group">
+                @Html.Label("Capacity")
+                @Html.TextBox("Capacity", string.Empty, new { @class = "col-xs-10 col-sm-5", id = "txtCapacity", required = "required" })
+                <span id="errorCapacity" style="color:red;font-weight:bold;"></span>
+            </div>
+            <div class="form-group">
+                @Html.Label("IsAvailable")
+                @Html.TextBox("IsAvailable", string.Empty, new { @class = "col-xs-10 col-sm-5", id = "txtIsAvailable", required = "required" })
+                <span id="errorIsAvailable" style="color:red;font-weight:bold;"></span>
+            </div>
+            <div class="form-group">
+                @Html.Label("Status")
+                @Html.TextBox("Status", string.Empty, new { @class = "col-xs-10 col-sm-5", id = "txtStatus", required = "required" })
+                <span id="errorStatus" style="color:red;font-weight:bold;"></span>
+            </div>
+            <div class="form-group">
+                @Html.Label("EmployeeID")
+                @Html.TextBox("EmployeeID", string.Empty, new { @class = "col-xs-10 col-sm-5", id = "txtEmployeeID", required = "required" })
+                <span id="errorEmployeeID" style="color:red;font-weight:bold;"></span>
+            </div>
+            <input id="btnCreateTable" type="submit" class="btn btn-success" value="Create" />
+            <input type="submit" class="btn btn-danger" value="Cancel" data-dismiss="modal" />
+        </div>
+    </div>
+</div>
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/assets/js/jquery-ui-1.12.1.min.js")
+        <script type="text/javascript">
+            $(function () {
+                $('#chkStatus').change(function () {
+                    if ($('#chkStatus').is(':checked'))
+                        $("#tablediv").fadeIn();
+                    else
+                        $('#tablediv').fadeOut();
+                });
+            });
+            $("#txtOrderDate").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-100:+0",
+                dateFormat: 'mm/dd/yy'});
+            //Deaclare array for item.
+            var Items = [];
+            var status = '@ViewBag.Status';
+            //Declare variable for Update method.
+            var selectedIndex;
+            var EditData = @Html.Raw(Json.Encode(Model.OrderItems));
+            $(document).ready(function () {
+                if(EditData!=null){
+                    Items=EditData;
+                    $("#btnCreate").val('Update');
+                    Fill();
+                }
+                $("#btnAdd").click(function () {
+                    $("#ValidationSummary").empty();
+                    if (!CheckRequiredFields()) {
+                        return;
+                    }
+                    var CategoryID, Category,
+                        FoodItemID, FoodItems,
+                        Quantity,RatePerItems,Amount;
+                    if ($("#ddlCategory").val() == '1') {
+                        Category = '-';
+                        CategoryID = null;
+                    }
+                    else {
+                        Category = $("#ddlcategory :selected").text();
+                        CategoryID = $("#ddlcategory").val();
+                    }
+                    if ($("#ddlfooditems").val() == '1') {
+                        FoodItems = '-';
+                        FoodItemID = null;
+                    }
+                    else {
+                        FoodItems = $("#ddlfooditems :selected").text();
+                        FoodItemID = $("#ddlfooditems").val();
+                    }
+                    Quantity=$("#txtQuantity").val();
+                    RatePerItems=$("#txtRatePerItems").val();
+                    if(Quantity!=null&&RatePerItems!=null){
+                        Amount=Quantity*RatePerItems;
+                    }
+                    if (CheckDuplicate(selectedIndex)) {
+                        var btnText = $(this).val();
+                        if (btnText == 'Add') {
+                            //Insert Item into declared array.
+                            Items.push({
+                                Index: Items.length,
+                                FoodItemID: FoodItemID,
+                                FoodItems: FoodItems,
+                                CategoryID: CategoryID,
+                                Category: Category,
+                                Quantity:Quantity,
+                                RatePerItems:RatePerItems,
+                                Amount:Amount
+                            });
+                        }
+                        else if (btnText == 'Update') {
+                            //get the selected item and update it.
+                            var CategoryID, Category, FoodItemID, FoodItems,Quantity,RatePerItems;
+                            FoodItemID= $("#ddlfooditems").val();
+                            FoodItems=$("#ddlfooditems :selected").text();
+                            CategoryID=$("#ddlcategory").val();
+                            Category=$("#ddlcategory :selected").text();
+                            Quantity= $("#txtQuantity").val();
+                            RatePerItems=$("#txtRatePerItems").val();
+                            if(Quantity!=null&&RatePerItems!=null){
+                                Amount=Quantity*RatePerItems;
+                            }
+                            $.each(Items, function (i, val) {
+                                if (val.Index == selectedIndex) {
+                                    val.FoodItemID =FoodItemID;
+                                    val.FoodItems = FoodItems;
+                                    val.CategoryID =CategoryID ;
+                                    val.Category =Category ;
+                                    val.Quantity =Quantity;
+                                    val.RatePerItems=RatePerItems;
+                                    val.Amount=Amount;
+                                    $('#btnAdd').val('Add');
+                                }
+                            })
+                        }
+                        Fill();
+                        Clear();
+                    }
+                });//end of btnAdd click function
+                $("#btnCancel_").click(function () {
+                    $('#btnAdd').val('Add');
+                    Clear();
+                });
+                $("#btnCreate").click(function () {
+                    $("#ValidationSummary").empty();
+                    var OrderMasterHeader = $("#OrderMasterHeader").serialize();
+                    if(status=='Create'){
+                        $.ajax({
+                            url: "@Url.Action("Create", "Order")",
+                            type: "POST",
+                            data: OrderMasterHeader + "&&OrderItem=" + JSON.stringify(Items),
+                            success: function (data) {
+                                if (data.Errors != "") {
+                                    $("#ValidationSummary").append(data.Errors);
+                                    $("html, body").animate({
+                                        scrollTop: 0
+                                    }, 50);
+                                }
+                                else {
+                                    window.location = '@Url.Action("Index","Order",new { Status="Saving successful."})';
+                                }
+                            }
+                        });//end of ajax Create
+                    }//end of is Create?[If]
+                    else if(status=="Edit"){
+                        $.ajax({
+                            url: "@Url.Action("Edit", "Order")",
+                            type: "POST",
+                            data: OrderMasterHeader + "&&OrderItem=" + JSON.stringify(Items),
+                            success: function (data) {
+                                if (data.Errors != "") {
+                                    $("#ValidationSummary").append(data.Errors);
+                                    $("html, body").animate({
+                                        scrollTop: 0
+                                    }, 50);
+                                }
+                                else {
+                                    window.location = '@Url.Action("Index","Order", new { Status = "Update successful." })';
+                                }
+                            }
+                        });//end of ajax Edit
+                    }//end of is Edit?[ else If]
+                })//end of btnCreate click function
+            });//end of document.ready function
+
+            //Generate Item Table
+            function Fill() {
+                var $table = $('<table/>');
+                var $tbody = $('<tbody/>');
+                $table.addClass('table table-bordered');
+                $headerRow = $('<tr/>');
+                $headerRow.append('<th>Serial No</th>');
+                $headerRow.append('<th>Food Items</th>');
+                $headerRow.append('<th>Category</th>');
+                $headerRow.append('<th>Quantity</th>');
+                $headerRow.append('<th>Rate Per Items</th>');
+                $headerRow.append('<th>Amount</th>');
+                $headerRow.append('<th>Action</th>');
+                $table.append($headerRow);
+                $.each(Items, function (i, val) {
+                    var $row = $('<tr/>');
+                    $row.append($('<td/>').html(i+1));
+                    $row.append($('<td/>').html(val.FoodItems));
+                    $row.append($('<td/>').html(val.Category));
+                    $row.append($('<td/>').html(val.Quantity));
+                    $row.append($('<td/>').html(val.RatePerItems));
+                    $row.append($('<td/>').html(val.Amount));
+                    $row.append($('<td/>').html('<input type="button" class="btn btn-primary" value="Edit" onclick="Edit(' + val.Index + ')" /> &nbsp;<input type="button" class="btn btn-danger" value="Delete" onclick="Delete(' + val.Index + ')"/>'));
+                    $tbody.append($row);
+                })
+                $table.append($tbody);
+                $('#ItemTable').html($table);
+                Clear();
+            }
+            //Clear all Item control
+            function Clear() {
+                $("#ddlfooditems").val('1');
+                $("#ddlcategory").val('1');
+                $("#txtQuantity").val(null);
+                $("#txtRatePerItems").val(null);
+                $("#txtAmount").val(null);
+            }
+            //Get item from declared array by selected index
+            function Edit(Idx) {
+                var FoodItemID, CategoryID, Quantity,RatePerItems,Amount;
+                $.each(Items, function (i, val) {
+                    if (val.Index == Idx) {
+                        FoodItemID = val.FoodItemID;
+                        CategoryID = val.CategoryID;
+                        Quantity = val.Quantity;
+                        RatePerItems = val.RatePerItems;
+                        Amount = val.Amount;
+                        selectedIndex = Idx;
+                    }
+                });
+                if (FoodItemID == '') {
+                    $("#ddlfooditems").val('1');
+                }
+                else {
+                    $("#ddlfooditems").val(FoodItemID);
+                }
+                if (CategoryID == '') {
+                    $("#ddlcategory").val('1');
+                }
+                else {
+                    $("#ddlcategory").val(CategoryID);
+                }
+                $("#txtQuantity").val(Quantity);
+                $("#txtRatePerItems").val(RatePerItems);
+                $("#txtAmount").val(Amount);
+                $('#btnAdd').val('Update');
+            }
+            //Delete the item from declared array by selected index
+            function Delete(Idx) {
+                Items = jQuery.grep(Items, function (value) {
+                    return value.Index != Idx;
+                });
+                Fill();
+                Clear();
+                $('#btnAdd').val('Add');
+            }
+            //Check the item controls
+            function CheckRequiredFields() {
+                $("#ItemBody span").empty();
+                var flag = true;
+                if ($("#ddlcategory").val() == '') {
+                    $("#rmsCategory").text('Required Category.');
+                    flag = false;
+                }
+                if ($("#ddlfooditems").val() == '1') {
+                    $("#rmsfooditems").text('Required fooditems.');
+                    flag = false;
+                }
+                if ($("#txtQuantity").val() == '') {
+                    $("#txtQuantity").text('Required Quantity.');
+                    flag = false;
+                }
+                if ($("#txtRatePerItems").val() == '') {
+                    $("#txtRatePerItems").text('Required Rate Per Item.');
+                    flag = false;
+                }
+                return flag;
+            }
+            //Check duplicate data from declared array.
+            function CheckDuplicate(Idx) {
+                var FoodItemsID= $("#ddlfooditems").val();
+                //FoodItemsID = $("#ddlfooditems").val();
+                var flag = true;
+                $.each(Items, function (i, val) {
+                    if ( val.FoodItemsID == FoodItemsID && val.Index != Idx) {
+                        flag = false;
+                    }
+                })
+                if (flag) {
+                    return flag;
+                }
+                else {
+                    AlertMessage('Duplicate Item Data.');
+                    return flag;
+                }
+            }
+            //Alert Message Method
+            function AlertMessage(message) {
+                var newDiv = $(document.createElement('div'));
+                newDiv.html(message);
+                newDiv.dialog({
+                    width: 500,
+                    title: 'System Message',
+                    modal: true,
+                    buttons: {
+                        Ok: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                });
+            }
+            //bind food items detail by the specify category id
+            $("#ddlcategory").change(function () {
+                $("#txtRatePerItems").val('');
+                // this will call when Category Dropdown select change
+                var CategoryID = $("#ddlcategory").val();
+                if (CategoryID!="") {
+                    var ddlFoodItems = $("#ddlfooditems");
+                    ddlFoodItems.empty(); // this line is for clear all items from fooditems dropdown
+                    ddlFoodItems.append($("<option></option").val("").html("-Select One-"));
+
+                    // Here I will call Controller Action via Jquery to load State for selected Category
+                    $.ajax({
+                        url: "@Url.Action("getFoodItems_Details", "Order")",
+                        type: "GET",
+                        data: { CategoryID: CategoryID },
+                        dataType: "json",
+                        success: function (data) {
+                            $.each(data, function (i, val) {
+                                ddlFoodItems.append(
+                                        $("<option></option>").val(val.FoodItemID).html(val.Description)
+                                    );
+                            });
+                        },
+                        error: function () {
+                            alert("Error!");
+                        }
+                    });
+                }
+
+            });//end of cascading data bind method[food items by the category id]
+
+            //bind food items detail by the specify food item id
+            $("#ddlfooditems").change(function () {
+                // this will call when FoodITem Dropdown select change
+                var FoodItemID = $("#ddlfooditems").val();
+                if (FoodItemID!="") {
+                    var RatePerItems = $("#txtRatePerItems");
+                    // Here I will call Controller Action via Jquery to load State for selected FoodITem
+                    $.ajax({
+                        url: "@Url.Action("getFoodItemRecord", "Order")",
+                        type: "GET",
+                        data: { FoodItemID: FoodItemID },
+                        dataType: "json",
+                        success: function (data) {
+                            RatePerItems.val(data.NewPrice);
+                        },
+                        error: function () {
+                            alert("Error!");
+                        }
+                    });
+                }else{
+                    $("#txtRatePerItems").val('');
+                }
+            });//end of cascading data bind method[food items by the FoodITem id]
+
+            $(document).ready(function () {
+                //this calculates values automatically
+                Calc();
+                $("#txtQuantity").on("keydown keyup", function () {
+                    Calc();
+                });
+            });
+            //Automatically calculation function
+            function Calc() {
+                //get rateperitem amout
+            var    rateperitem =parseInt($("#txtRatePerItems").val());
+                //get QTY
+             var   qty =parseInt( $("#txtQuantity").val());
+                //multipy of rate*qty
+               var amt = rateperitem * qty;
+               if (!isNaN(amt)) {
+                   $("#txtAmount").val(amt);
+                }
+            }
+            //Ajax Post Functin For Category Create
+            $("#btnCreateCategory").click(function() {
+                CreateCategoryRecord();
+            });
+            function CreateCategoryRecord() {
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'JSON',
+                    url: "@Url.Action("CreateCategory", "Category",FormMethod.Post)",
+                    data: { 'Code':$("#txtCode").val(),'Description':$("#txtDescription").val()},
+                success: function (data) {
+                    if (data) {
+                        alert("New Address record create successfully!")
+                        window.location.reload();
+                    }
+                    else if (data == false) {
+                        $('#errorCity').text("Code is already existed!");
+                    }
+                    else {
+                        $('#errorCity').text("An error occurred while processing your request.");
+                    }
+                }
+            });
+            }
+            //Ajax Post Functin For Table Create
+            $("#btnCreateTable").click(function() {
+                CreateTable();
+            });
+            function CreateTable() {
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'JSON',
+                    url: "@Url.Action("CreateTable", "Table",FormMethod.Post)",
+                    data: { 'TableNo':$("#txtTableNo").val(),'Capacity':$("#txtCapacity").val(),'IsAvailable':$("#txtIsAvailable").val(),'Status':$("#txtStatus").val(),'EmployeeID':$("#txtEmployeeID").val()},
+                success: function (data) {
+                    if (data) {
+                        alert("New Table record create successfully!")
+                        window.location.reload();
+                    }
+                    else if (data == false) {
+                        $('#errorTableNo').text("Code is already existed!");
+                    }
+                    else {
+                        $('#errorTableNo').text("An error occurred while processing your request.");
+                    }
+                }
+            });
+            }
+        </script>
+    }
+
+
+

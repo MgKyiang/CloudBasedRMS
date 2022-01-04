@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>CBRMS</title>
+    <link rel="shortcut icon" href="~/favicon.png">
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //get current access token
+            var token = localStorage.getItem('access_token');
+            // access token is null => redirect to login page
+            if (token == null || token == '' || token == undefined) {
+                window.location.href = '/Login';
+            }
+            else
+            {
+                var userName = localStorage.getItem('userName');
+                $('#spanUsername').text(userName);
+            }
+
+            //logoff
+            $('#btnLogoff').on('click', function () {
+                //reomve existed access_token
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('userName');
+
+                //redirect to homepage
+                window.location.href = '/Login';
+            });
+        })
+    </script>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("CBRMS-WebAPI", "Index", "Auth", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Authorization", "Index", "Auth", new { area = "" }, null)</li>
+                    <li>@Html.ActionLink("API-Help", "Index", "Help", new { area = "" }, null)</li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a style="color:white;"><strong>Hello <span id="spanUsername"></span></strong></a>
+                    </li>
+                    <li><a id="btnLogoff" style="color:white;cursor:pointer;">Log off</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year -CBRMS</p>
+        </footer>
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

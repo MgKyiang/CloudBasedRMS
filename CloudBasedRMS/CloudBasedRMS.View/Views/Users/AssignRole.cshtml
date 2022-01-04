@@ -1,0 +1,48 @@
+﻿@model  CloudBasedRMS.View.Controllers.ViewModel.UserAssignRoleViewModel
+@{
+    ViewBag.Title = "AssignRole";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li>
+            <i class="ace-icon fa fa-home home-icon"></i>
+            <a href="#">@Resource.Home</a>
+        </li>
+        <li>
+            <a href="#">@Resource.AdminSetUp</a>
+        </li>
+        <li class="active">User Assign To Role</li>
+    </ul><!-- /.breadcrumb -->
+</div>
+@Html.ActionLink(Resource.BacktoList, "Index")
+@using (Html.BeginForm("AssignRole", "Users", FormMethod.Post))
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.ApplicationUser.UserName)
+        @Html.TextBoxFor(m => m.ApplicationUser.UserName, null, new { @class = "col-xs-10 col-sm-5", @readonly = "readonly" })
+        <input type="hidden" name="userId" value="@Model.ApplicationUser.Id" />
+    </div>
+
+    <table class="table table-hover">
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.ApplicationRoles.First().Name)</th>
+            <th>@Html.DisplayNameFor(m => m.ApplicationRoles.First().CreatedDate)</th>
+            <th>@Html.DisplayNameFor(m => m.ApplicationRoles.First().UpdatedDate)</th>
+        </tr>
+        @foreach (var item in Model.ApplicationRoles)
+        {
+            <tr>
+                <td>
+
+                    <label>@Html.RadioButton("roleId", item.Id) @item.Name</label>
+
+                </td>
+                <td>@Html.Label(item.CreatedDate.ToString())</td>
+                <td>@Html.Label(item.UpdatedDate.ToString())</td>
+            </tr>
+        }
+    </table>
+    <input type="submit" value="Assign Role" class="btn btn-success" />
+}
+

@@ -1,0 +1,429 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@model IPagedList<CloudBasedRMS.View.Controllers.ViewModel.KOTViewModel>
+@{
+    ViewBag.Title = "KOT";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+    @*search Option Here*@
+var searchbyList = new List<SelectListItem>()
+    {
+        new SelectListItem { Text=Resource.KitchenName, Value = "KitchenName" },
+        new SelectListItem { Text=Resource.KitchenDescription,Value = "KitchenDescription" },
+        new SelectListItem { Text=Resource.UserName,Value = "CreatedUserName" },
+        new SelectListItem { Text=Resource.CreatedDate,Value = "CreatedDate" }
+    };
+}
+@*Create/Update/Delete Status*@
+@if (!string.IsNullOrEmpty(ViewBag.Status))
+{
+    <div class="alert alert-success">
+        <label>@ViewBag.Status</label>
+    </div>
+}
+    @*Searching Result*@
+    @if (!string.IsNullOrEmpty(ViewBag.SearchBy) && !string.IsNullOrEmpty(ViewBag.Search))
+    {
+        <div class="alert alert-success">
+            <ul>
+                <li><label>Search By : @ViewBag.SearchBy</label></li>
+                <li><label>Search Value : @ViewBag.Search</label></li>
+            </ul>
+        </div>
+    }
+    @*Searching Status*@
+    @if ((!string.IsNullOrEmpty(ViewBag.Searchby1) && !string.IsNullOrEmpty(ViewBag.Search1)) ||
+                                                                                                                                                                                                                                                                                                                                                                         (!string.IsNullOrEmpty(ViewBag.Searchby2) && !string.IsNullOrEmpty(ViewBag.Search2)) ||
+                                                                                                                                                                                                                                                                                                                                                                         (!string.IsNullOrEmpty(ViewBag.Searchby3) && !string.IsNullOrEmpty(ViewBag.Search3)) ||
+                                                                                                                                                                                                                                                                                                                                                                         (!string.IsNullOrEmpty(ViewBag.Searchby4) && !string.IsNullOrEmpty(ViewBag.Search4)))
+    {
+        <div class="alert alert-success">
+            <ul>
+
+                @if (!string.IsNullOrEmpty(ViewBag.Searchby1) && !string.IsNullOrEmpty(ViewBag.Search1))
+                {
+                    <li>Search by @ViewBag.Searchby1 : @ViewBag.Search1</li>
+                }
+
+                @if (!string.IsNullOrEmpty(ViewBag.Searchby2) && !string.IsNullOrEmpty(ViewBag.Search2))
+                {
+                    <li>Search by @ViewBag.Searchby2 : @ViewBag.Search2</li>
+                }
+
+                @if (!string.IsNullOrEmpty(ViewBag.Searchby3) && !string.IsNullOrEmpty(ViewBag.Search3))
+                {
+                    <li>Search by @ViewBag.Searchby3 : @ViewBag.Search3</li>
+                }
+
+                @if (!string.IsNullOrEmpty(ViewBag.Searchby4) && !string.IsNullOrEmpty(ViewBag.Search4))
+                {
+                    <li>Search by @ViewBag.Searchby4 : @ViewBag.Search4</li>
+                }
+
+            </ul>
+        </div>
+    }
+    <div class="breadcrumbs ace-save-state" id="breadcrumbs">
+        <ul class="breadcrumb">
+            <li>
+                <i class="ace-icon fa fa-home home-icon"></i>
+                <a href="#">@Resource.Home</a>
+            </li>
+
+            <li>
+                <a href="#">@Resource.Kitchen</a>
+            </li>
+            <li class="active">KOT</li>
+        </ul><!-- /.breadcrumb -->
+    </div>
+    @*Searching Panel*@
+    @using (Html.BeginForm("KOT", "Kitchen", FormMethod.Get))
+    {
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <a id="filter"><strong>Filter</strong></a> <span id="filterspan" class="glyphicon glyphicon-chevron-down"></span>
+                | @Html.ActionLink("Reload", "KOT")
+            </div>
+            <div id="filtercollapse" style="display:none;" class="panel-body">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.Label("SearchBy")
+                            @Html.DropDownList("searchby1", searchbyList, "-- Select One --", new { @class = "form-control", id = "searchby" })
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBox("search1", string.Empty, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.Label("SearchBy")
+                            @Html.DropDownList("searchby2", searchbyList, "-- Select One --", new { @class = "form-control", id = "searchby" })
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBox("search2", string.Empty, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.Label("SearchBy")
+                            @Html.DropDownList("searchby3", searchbyList, "-- Select One --", new { @class = "form-control", id = "searchby" })
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBox("search3", string.Empty, new { @class = "form-control", id = "searchby" })
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            @Html.Label("SearchBy")
+                            @Html.DropDownList("searchby4", searchbyList, "-- Select One --", new { @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBox("search4", string.Empty, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <input type="submit" value="Search" class="btn btn-success" />
+            </div>
+        </div>
+    }
+    @using (Html.BeginForm("SetReadyPickupMsg", "Kitchen", FormMethod.Post))
+    {
+        <div class="main-content">
+            <div class="main-content-inner">
+                <div class="page-content">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <!-- PAGE CONTENT BEGINS -->
+                            <div class="space-6"></div>
+                            <div class="row">
+                                <div class="col-sm-10 col-sm-offset-1">
+                                    <div class="widget-box transparent">
+                                        @if (Model != null)
+                                        {
+                                            foreach (var item in Model)
+                                            {
+                                                <div class="widget-header widget-header-large">
+                                                    <h3 class="widget-title grey lighter">
+                                                        <i class="ace-icon fa fa-shopping-cart bigger-160"></i>
+                                                        KOT Invoice
+                                                    </h3>
+
+                                                    <div class="widget-toolbar no-border invoice-info">
+                                                        <span class="invoice-info-label">Kitchen:</span>
+                                                        <span class="red">#@item.Kitchen.KitchenName</span>
+
+                                                        <br />
+                                                        <span class="invoice-info-label">Order Time:</span>
+                                                        <span class="invoice-info-label">@item.OrderItems.CreatedDate.ToShortDateString()</span>
+                                                        @Html.Hidden("OrderMasterID", item.OrderItems.OrderMasterID)
+                                                        @*<ul id="kitchensUl" style="list-style:none;padding:5px;"></ul>*@
+                                                    </div>
+
+                                                    <div class="widget-toolbar hidden-480">
+                                                        <a href="#">
+                                                            <i class="ace-icon fa fa-print"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="widget-body">
+                                                    <div class="widget-main padding-24">
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                <div class="row">
+                                                                    <div class="col-xs-11 label label-lg label-info arrowed-in arrowed-right">
+                                                                        <b>OrderInfo</b>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div>
+                                                                    <ul class="list-unstyled spaced">
+
+                                                                        <li>
+                                                                            <i class="ace-icon fa fa-caret-right blue"></i>OrderNo:@item.OrderItems.OrderMaster.OrderNo
+                                                                            @Html.Hidden("OrderItemsID", item.OrderItems.OrderItemsID)
+                                                                        </li>
+
+                                                                        <li>
+                                                                            <i class="ace-icon fa fa-caret-right blue"></i>OrderTime:@item.OrderItems.OrderMaster.CreatedDate.ToShortTimeString()
+                                                                        </li>
+
+                                                                        <li>
+                                                                            <i class="ace-icon fa fa-caret-right blue"></i>Description:@item.OrderItems.OrderMaster.Description
+                                                                        </li>
+
+                                                                        <li>
+                                                                            <i class="ace-icon fa fa-caret-right blue"></i>
+                                                                            Is Parcel?:
+                                                                            @if (item.OrderItems.OrderMaster.IsParcel == true)
+                                                                            {
+                                                                                <b class="red">
+                                                                            this Order is Percel.
+                                                                            </b>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <b class="grey">
+                                                                                    this Order is on-shop.(not Percel).
+                                                                                </b>
+                                                                            }
+                                                                        </li>
+
+                                                                        <li class="divider"></li>
+
+                                                                        <li>
+                                                                            <i class="ace-icon fa fa-caret-right blue"></i>
+                                                                            Food Item Detail Info
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div><!-- /.col -->
+
+                                                            <div class="col-sm-6">
+                                                                <div class="row">
+                                                                    <div class="col-xs-11 label label-lg label-success arrowed-in arrowed-right">
+                                                                        <b>TableInfo</b>
+                                                                    </div>
+                                                                </div>
+                                                                <div>
+                                                                    <ul class="list-unstyled  spaced">
+                                                                        <li>
+                                                                            <i class="ace-icon fa fa-caret-right green"></i>TableNo:@item.OrderItems.OrderMaster.Table.TableNo
+                                                                        </li>
+
+                                                                        <li>
+                                                                            <i class="ace-icon fa fa-caret-right green"></i>Capacity:@item.OrderItems.OrderMaster.Table.Capacity
+                                                                        </li>
+
+                                                                        <li>
+                                                                            <i class="ace-icon fa fa-caret-right green"></i>checker waiter:@item.OrderItems.OrderMaster.Table.Employee.Name
+                                                                        </li>
+
+                                                                        <li class="divider"></li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div><!-- /.col -->
+                                                        </div><!-- /.row -->
+                                                        <div class="space"></div>
+                                                        <div>
+                                                            <table class="table table-striped table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="center">#</th>
+                                                                        <th>Food Item Name</th>
+                                                                        <th class="hidden-xs">Category</th>
+                                                                        <th class="hidden-480">IsTodaySpecial</th>
+                                                                        <th>Quantity</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        @Html.Hidden("FoodItemID", item.fooditems.FoodItemID)
+                                                                        <td class="center">1</td>
+                                                                        <td>
+                                                                            <a href="#">@item.fooditems.Description</a>
+                                                                        </td>
+                                                                        <td class="hidden-xs">
+                                                                            @item.fooditems.Category.Description
+                                                                        </td>
+                                                                        <td class="hidden-480">
+                                                                            @if (item.fooditems.IsTodaySpecial ==true) { <b class="red">Yes</b> }
+                                                                            else
+                                                                            {
+                                                                                <b class="green">No</b>
+
+                                                                            }
+                                                                        </td>
+                                                                        <td>@item.OrderItems.Quantity</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="hr hr8 hr-double hr-dotted"></div>
+                                                        <div class="row">                                                         
+                                                            <div class="col-sm-5 pull-right">
+                                                                <h4 class="pull-right">
+                                                                    <button class="btn btn-info" type="submit">
+                                                                        <i class="ace-icon fa fa-check bigger-110"></i>
+                                                                        Send Message!
+                                                                    </button>
+                                                                </h4>
+                                                            </div>
+                                                            <div class="col-sm-7 pull-left">ClickSendMessagetoWaiterwhenitwascooked</div>
+                                                        </div>
+                                                        <div class="space-6"></div>
+                                                        <div class="well">
+                                                            PleaseInfromyourcookingrecordwhenyoufinishit.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        else if (Model == null)
+                                        {
+                                            <p><h3><strong style="color:red;text-align:center;">There is no KOT Invoice!</strong></h3></p>
+                                        }
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- PAGE CONTENT ENDS -->
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.page-content -->
+            </div>
+        </div>
+    }
+    @Html.PagedListPager(Model,
+    page => Url.Action("KOT", new { searchby1 = Request.QueryString["searchby1"], search1 = Request.QueryString["search1"], searchby2 = Request.QueryString["searchby2"], search2 = Request.QueryString["search2"], searchby3 = Request.QueryString["searchby3"], search3 = Request.QueryString["search3"], searchby4 = Request.QueryString["searchby4"], search4 = Request.QueryString["search4"], sortby = Request["sortby"], page }),
+    new PagedListRenderOptions { Display = PagedListDisplayMode.IfNeeded, DisplayItemSliceAndTotal = true })
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script src="~/Scripts/jquery-1.12.4.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready()
+            {
+                //BindEntity
+                function BindEntity() {
+                    roleId = $('input[type="radio"]:checked').attr('id');
+                }
+
+                //AJAX GET Function
+                function GetAllKitchen() {
+                    $.ajax({
+                        url: "@Url.Action("GetAllKitchen", "Kitchen")",
+                        type: "GET",
+                        dataType: 'JSON',
+                        success: function (data) {
+                            //call bindEntity function
+                            BindEntityToControl(data);
+                        }
+                    });
+                }
+
+                //BindEntity To Control
+                function BindEntityToControl(data) {
+
+                    $('#txtUserName').val(data.ApplicationUser.UserName);
+                    $('#userId').val(data.ApplicationUser.Id);
+                    //set value userid variables
+                    userId = data.ApplicationUser.Id;
+
+                    //get kithen array
+                    roles = data.ApplicationRoles;
+
+                    //get ul
+                    var ul = $('#kitchensUl');
+
+                    //clear content
+                    ul.empty();
+
+                    $.each(roles, function (index, value) {
+                        //append data
+                        var li = '<li style="display:inline;padding:5px;margin-right:5px;"><label><input type="radio"  name="roles"  id="' + value.Id + '" value="" />' + value.Name + '</label></li>';
+
+                        ul.append(li);
+                    });
+                }
+                //=================================================
+                //End Role Assign
+                //=================================================
+
+                //Searching Panel
+                $('select').val('');
+                $('input[type="text"]').val('');
+
+                //Searchby Dropdown Change Event
+                $('select').change(function () {
+
+                    //currenc select value
+                    var value = $(this).val();
+                    //current select name
+                    var search = $(this).attr('name');
+                    //convert to search textbox name
+                    search = search.replace('searchby', 'search');
+
+                    if (value == '' || value == null || value == undefined) {
+                        $('input[name="' + search + '"]').val('');
+                    }
+
+                    if (value == 'CreatedDate') {
+
+                        var regex = "\\d[1-12]{1,2}/\\d[1-31]{1,2}/\\d{4}";
+                        $('input[name="' + search + '"]').attr('placeholder', 'MM/DD/YYYY');
+                        $('input[name="' + search + '"]').attr('pattern', regex);
+                    }
+                    else {
+                        $('input[name="' + search + '"]').removeAttr('placeholder');
+                        $('input[name="' + search + '"]').removeAttr('pattern');
+                    }
+
+                });
+
+                $('#filter').on('click', function () {
+
+                    if ($('#filterspan').hasClass('glyphicon glyphicon-chevron-down')) {
+
+                        $('#filterspan').removeClass('glyphicon glyphicon-chevron-down');
+
+                        $('#filterspan').addClass('glyphicon glyphicon-chevron-up');
+
+                        $('#filtercollapse').css("display", "block");
+
+                    }
+                    else {
+
+                        $('#filterspan').removeClass('glyphicon glyphicon-chevron-up');
+
+                        $('#filterspan').addClass('glyphicon glyphicon-chevron-down');
+
+                        $('#filtercollapse').css("display", "none");
+
+                    }
+                })
+            }
+        </script>
+    }
+
+
+

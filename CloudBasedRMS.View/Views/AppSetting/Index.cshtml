@@ -1,0 +1,302 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@model IPagedList<CloudBasedRMS.Core.ApplicationSetting>
+@{
+    ViewBag.Title = "AppSetting";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+    @*search Option Here*@
+var searchbyList = new List<SelectListItem>()
+    {
+        new SelectListItem { Text="Key", Value = "Key" },
+        new SelectListItem { Text="Value",Value = "Value" },
+    };
+}
+<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li>
+            <i class="ace-icon fa fa-home home-icon"></i>
+            <a href="#">@Resource.Home</a>
+        </li>
+
+        <li>
+            <a href="#">@Resource.AdminSetUp</a>
+        </li>
+        <li class="active">@Resource.ApplicationSetting</li>
+    </ul><!-- /.breadcrumb -->
+</div>
+<script src="~/assets/js/jquery-1.12.4.min.js"></script>
+<link href="~/Scripts/WOW-master/css/libs/animate.css" rel="stylesheet" />
+<script src="~/Scripts/WOW-master/dist/wow.js"></script>
+<script>
+    wow = new WOW(
+      {
+        animateClass: 'animated',
+        offset:       100,
+        callback:     function(box) {
+          console.log("WOW: animating <" + box.tagName.toLowerCase() + ">")
+        }
+      }
+    );
+    wow.init();
+</script>
+@*Searching Result*@
+@if (!string.IsNullOrEmpty(ViewBag.SearchBy) && !string.IsNullOrEmpty(ViewBag.Search))
+{
+    <div class="alert alert-success">
+
+        <ul>
+            <li><label>@Resource.SearchBy : @ViewBag.SearchBy</label></li>
+            <li><label>@Resource.SearchValue : @ViewBag.Search</label></li>
+        </ul>
+    </div>
+}
+@*Searching Status*@
+@if ((!string.IsNullOrEmpty(ViewBag.Searchby1) && !string.IsNullOrEmpty(ViewBag.Search1)) || (!string.IsNullOrEmpty(ViewBag.Searchby2) && !string.IsNullOrEmpty(ViewBag.Search2)))
+{
+    <div class="alert alert-success">
+        <ul>
+
+            @if (!string.IsNullOrEmpty(ViewBag.Searchby1) && !string.IsNullOrEmpty(ViewBag.Search1))
+                {
+                <li>@Resource.SearchBy @ViewBag.Searchby1 : @ViewBag.Search1</li>
+            }
+        </ul>
+    </div>
+}
+@*Searching Panel*@
+@using (Html.BeginForm("Index", "AppSetting", FormMethod.Get))
+{
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <a id="filter"><strong>@Resource.Filter</strong></a> <span id="filterspan" class="glyphicon glyphicon-chevron-down"></span>
+            | @Html.ActionLink(Resource.Reload, "Index")
+        </div>
+        <div id="filtercollapse" style="display:none;" class="panel-body">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.Label(Resource.SearchBy)
+                        @Html.DropDownList("searchby1", searchbyList, "-- Select One --", new { @class = "form-control", id = "searchby" })
+                    </div>
+                    <div class="form-group">
+                        @Html.TextBox("search1", string.Empty, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.Label("Resource.SearchBy")
+                        @Html.DropDownList("searchby2", searchbyList, "-- Select One --", new { @class = "form-control", id = "searchby" })
+                    </div>
+                    <div class="form-group">
+                        @Html.TextBox("search2", string.Empty, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
+            <input type="submit" value="@Resource.Search" class="btn btn-success" />
+
+        </div>
+    </div>
+
+}
+<p>
+    <a data-toggle="modal" class="actionlink" name="btnCreateLink" data-target="#dialogCreateRole">@Resource.Create</a>
+</p>
+<table class="table table-hover">
+    <tr>
+        <th>Action</th>
+        <th>@Html.ActionLink("Key", "index", new { sortby = ViewBag.KeySortby, searchby1 = Request.QueryString["searchby1"], search1 = Request.QueryString["search1"], searchby2 = Request.QueryString["searchby2"], search2 = Request.QueryString["search2"] })</th>
+        <th>@Html.ActionLink("Value", "index", new { sortby = ViewBag.ValueSortby, searchby1 = Request.QueryString["searchby1"], search1 = Request.QueryString["search1"], searchby2 = Request.QueryString["searchby2"], search2 = Request.QueryString["search2"] })</th>
+       
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            <a href="@Url.Action("Edit", "AppSetting", new { id = item.ApplicationSettingID })" class="tooltip-success" data-rel="tooltip" title="Edit">
+                <span class="green">
+                    <i class="ace-icon fa fa-pencil-square-o bigger-120"></i>
+                </span>
+            </a>
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Key)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Value)
+        </td>
+        
+    </tr>
+}
+</table>
+@Html.PagedListPager(Model,
+    page => Url.Action("Index", new { searchby1 = Request.QueryString["searchby1"], search1 = Request.QueryString["search1"], searchby2 = Request.QueryString["searchby2"], search2 = Request.QueryString["search2"], sortby = Request["sortby"], page }),
+    new PagedListRenderOptions { Display = PagedListDisplayMode.IfNeeded, DisplayItemSliceAndTotal = true })
+
+@*Create DialogBox*@
+<div id="dialogCreateRole" class="modal wow lightSpeedIn" role="dialog" style="margin-left:35%;margin-right:35%;margin-top:5%;overflow:hidden;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 id="dialogHeader">@Resource.ApplicationSetting</h4>
+        </div>
+        <div class="modal-body">
+            <span id="lblMessage" style="color:dodgerblue;font-weight:bold;"></span>
+            <div class="form-group">
+                @Html.Label("Key Name")
+                @Html.TextBox("KeyName", string.Empty, new { @class = "form-control", id = "txtKeyName", required = "required" })
+                <span id="errorkeyname" style="color:red;font-weight:bold;"></span>
+                </div>
+            <div class="form-group">
+                    @Html.Label("Key Value")
+                    @Html.TextBox("KeyValue", string.Empty, new { @class = "form-control", id = "txtKeyValue", required = "required" })
+                    <span id="errorkeyvalue" style="color:red;font-weight:bold;"></span>
+                </div>
+            <input id="btnappsetting" type="submit" class="btn btn-success" value="Create" />
+            <input id="btnCancel" type="submit" class="btn btn-danger" value="Cancel" data-dismiss="modal" />
+
+        </div>
+    </div>
+</div>
+<script src="~/assets/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript">
+        $(document).ready()
+        {
+            var KeyName, KeyValue;
+            //CreateRole Button Click Event
+            $('#btnappsetting').click(function () {
+
+                //BindEntity
+                BindEntity();
+                //check validation
+                if (ValidationRecord()) {
+                    //Call Ajax Post Function
+                    CreateAppsetting();
+                }
+                else {
+                    //Set Error Message                
+                    $('#errorkeyname').text("Require Key Name.");
+                    $('#errorkeyvalue').text("Require Key Value.");
+                }
+            });
+                //validation for create roleName
+                function ValidationRecord() {
+                    if (KeyName == '' || KeyName == null || KeyName == undefined) {
+                        return false;
+                    }
+                    else if(KeyValue == '' || KeyValue == null || KeyValue == undefined){
+                        return false;
+                    }
+                    else {
+                        return true;
+                    }
+                }
+            
+                //BindEntity
+                function BindEntity() {
+                    KeyName = $('#txtKeyName').val();
+                    KeyValue = $('#txtKeyValue').val();
+                }
+
+                //Ajax Post Functin For Role Create
+                function CreateAppsetting() {
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'JSON',
+                        url: "@Url.Action("Create", "AppSetting", FormMethod.Post)",
+                        data: { 'Key': KeyName,'Value':KeyValue},
+                        success: function (data) {
+                            if (data) {
+                                window.location.reload();
+                                alert("Save Successfully!")
+                            }
+                            else if (data == false) {
+                                $('#errorkeyname').text("Key Name is already existed!");
+                            }
+                            else {
+                                $('#errorkeyname').text("An error occurred while processing your request.");
+                            }
+                        }
+                    });
+                }
+            $('#btnCancel').click(function () { ClearControl(); });
+            function ClearControl() {
+                $('#txtKeyName').text('');
+                $('#txtKeyValue').val('');
+                $('#errorkeyname').text('');
+                $('#errorkeyvalue').text('');
+            }
+            }
+ </script>
+
+<style type="text/css">
+    #filter {
+    }
+
+        #filter:hover {
+            cursor: pointer;
+        }
+
+    #filterspan {
+        padding-left: 1px;
+        padding-right: 1px;
+    }
+</style>
+<script type="text/javascript">
+        $(document).ready()
+        {
+            $('select').val('');
+            $('input[type="text"]').val('');
+
+            //Searchby Dropdown Change Event
+            $('select').change(function () {
+
+                //currenc select value
+                var value = $(this).val();
+                //current select name
+                var search = $(this).attr('name');
+                //convert to search textbox name
+                search = search.replace('searchby', 'search');
+
+                if (value == '' || value == null || value == undefined) {
+                    $('input[name="' + search + '"]').val('');
+                }
+
+                if (value == 'CreatedDate') {
+
+                   // var regex = "\\d[1-12]{1,2}/\\d[1-31]{1,2}/\\d{4}";
+                   // $('input[name="' + search + '"]').attr('placeholder', 'MM/DD/YYYY');
+                   // $('input[name="' + search + '"]').attr('pattern', regex);
+                    $('input[name="' + search + '"]').attr('type', 'Date');
+                }
+                else {
+                   // $('input[name="' + search + '"]').removeAttr('placeholder');
+                   // $('input[name="' + search + '"]').removeAttr('pattern');
+                    $('input[name="' + search + '"]').attr('type', 'text');
+                }
+
+            });
+
+            $('#filter').on('click', function () {
+
+                if ($('#filterspan').hasClass('glyphicon glyphicon-chevron-down')) {
+
+                    $('#filterspan').removeClass('glyphicon glyphicon-chevron-down');
+
+                    $('#filterspan').addClass('glyphicon glyphicon-chevron-up');
+
+                    $('#filtercollapse').css("display", "block");
+
+                }
+                else {
+
+                    $('#filterspan').removeClass('glyphicon glyphicon-chevron-up');
+
+                    $('#filterspan').addClass('glyphicon glyphicon-chevron-down');
+
+                    $('#filtercollapse').css("display", "none");
+
+                }
+            })
+        }
+</script>

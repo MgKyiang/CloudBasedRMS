@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="SaleBillGroupbyCasherDataSet" targetNamespace="http://tempuri.org/SaleBillGroupbyCasherDataSet.xsd" xmlns:mstns="http://tempuri.org/SaleBillGroupbyCasherDataSet.xsd" xmlns="http://tempuri.org/SaleBillGroupbyCasherDataSet.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="SaleBillGroupbyCasherDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="SaleBillGroupbyCasherDataSet" msprop:Generator_UserDSName="SaleBillGroupbyCasherDataSet">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="SaleBillGroupByCashier" msprop:Generator_TableClassName="SaleBillGroupByCashierDataTable" msprop:Generator_TableVarName="tableSaleBillGroupByCashier" msprop:Generator_TablePropName="SaleBillGroupByCashier" msprop:Generator_RowDeletingName="SaleBillGroupByCashierRowDeleting" msprop:Generator_RowChangingName="SaleBillGroupByCashierRowChanging" msprop:Generator_RowEvHandlerName="SaleBillGroupByCashierRowChangeEventHandler" msprop:Generator_RowDeletedName="SaleBillGroupByCashierRowDeleted" msprop:Generator_UserTableName="SaleBillGroupByCashier" msprop:Generator_RowChangedName="SaleBillGroupByCashierRowChanged" msprop:Generator_RowEvArgName="SaleBillGroupByCashierRowChangeEvent" msprop:Generator_RowClassName="SaleBillGroupByCashierRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="SaleBillNo" msprop:Generator_ColumnVarNameInTable="columnSaleBillNo" msprop:Generator_ColumnPropNameInRow="SaleBillNo" msprop:Generator_ColumnPropNameInTable="SaleBillNoColumn" msprop:Generator_UserColumnName="SaleBillNo" type="xs:string" minOccurs="0" />
+              <xs:element name="SaleBillDate" msprop:Generator_ColumnVarNameInTable="columnSaleBillDate" msprop:Generator_ColumnPropNameInRow="SaleBillDate" msprop:Generator_ColumnPropNameInTable="SaleBillDateColumn" msprop:Generator_UserColumnName="SaleBillDate" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="CasherName" msprop:Generator_ColumnVarNameInTable="columnCasherName" msprop:Generator_ColumnPropNameInRow="CasherName" msprop:Generator_ColumnPropNameInTable="CasherNameColumn" msprop:Generator_UserColumnName="CasherName" type="xs:string" minOccurs="0" />
+              <xs:element name="OrderNo" msprop:Generator_ColumnVarNameInTable="columnOrderNo" msprop:Generator_ColumnPropNameInRow="OrderNo" msprop:Generator_ColumnPropNameInTable="OrderNoColumn" msprop:Generator_UserColumnName="OrderNo" type="xs:string" minOccurs="0" />
+              <xs:element name="CustomerName" msprop:Generator_ColumnVarNameInTable="columnCustomerName" msprop:Generator_ColumnPropNameInRow="CustomerName" msprop:Generator_ColumnPropNameInTable="CustomerNameColumn" msprop:Generator_UserColumnName="CustomerName" type="xs:string" minOccurs="0" />
+              <xs:element name="Amount" msprop:Generator_ColumnVarNameInTable="columnAmount" msprop:Generator_ColumnPropNameInRow="Amount" msprop:Generator_ColumnPropNameInTable="AmountColumn" msprop:Generator_UserColumnName="Amount" type="xs:decimal" minOccurs="0" />
+              <xs:element name="Tax" msprop:Generator_ColumnVarNameInTable="columnTax" msprop:Generator_ColumnPropNameInRow="Tax" msprop:Generator_ColumnPropNameInTable="TaxColumn" msprop:Generator_UserColumnName="Tax" type="xs:decimal" minOccurs="0" />
+              <xs:element name="Discount" msprop:Generator_ColumnVarNameInTable="columnDiscount" msprop:Generator_ColumnPropNameInRow="Discount" msprop:Generator_ColumnPropNameInTable="DiscountColumn" msprop:Generator_UserColumnName="Discount" type="xs:decimal" minOccurs="0" />
+              <xs:element name="NetAmount" msprop:Generator_ColumnVarNameInTable="columnNetAmount" msprop:Generator_ColumnPropNameInRow="NetAmount" msprop:Generator_ColumnPropNameInTable="NetAmountColumn" msprop:Generator_UserColumnName="NetAmount" type="xs:decimal" minOccurs="0" />
+              <xs:element name="CasherID" msprop:Generator_ColumnVarNameInTable="columnCasherID" msprop:Generator_ColumnPropNameInRow="CasherID" msprop:Generator_ColumnPropNameInTable="CasherIDColumn" msprop:Generator_UserColumnName="CasherID" type="xs:string" minOccurs="0" />
+              <xs:element name="Name" msprop:Generator_ColumnVarNameInTable="columnName" msprop:Generator_ColumnPropNameInRow="Name" msprop:Generator_ColumnPropNameInTable="NameColumn" msprop:Generator_UserColumnName="Name" type="xs:string" minOccurs="0" />
+              <xs:element name="Address" msprop:Generator_ColumnVarNameInTable="columnAddress" msprop:Generator_ColumnPropNameInRow="Address" msprop:Generator_ColumnPropNameInTable="AddressColumn" msprop:Generator_UserColumnName="Address" type="xs:string" minOccurs="0" />
+              <xs:element name="gmail" msprop:Generator_ColumnVarNameInTable="columngmail" msprop:Generator_ColumnPropNameInRow="gmail" msprop:Generator_ColumnPropNameInTable="gmailColumn" msprop:Generator_UserColumnName="gmail" type="xs:string" minOccurs="0" />
+              <xs:element name="facebook" msprop:Generator_ColumnVarNameInTable="columnfacebook" msprop:Generator_ColumnPropNameInRow="facebook" msprop:Generator_ColumnPropNameInTable="facebookColumn" msprop:Generator_UserColumnName="facebook" type="xs:string" minOccurs="0" />
+              <xs:element name="Phone" msprop:Generator_ColumnVarNameInTable="columnPhone" msprop:Generator_ColumnPropNameInRow="Phone" msprop:Generator_ColumnPropNameInTable="PhoneColumn" msprop:Generator_UserColumnName="Phone" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

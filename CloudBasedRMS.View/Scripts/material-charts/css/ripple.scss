@@ -1,0 +1,81 @@
+.legitRipple {
+	position: relative;
+	overflow: hidden;
+	user-select: none; // would interfere with dragging
+	z-index: 0;
+	// z-index needs to be something other than auto or the ripple will appear
+	// behind the container element sometimes
+
+	//default: .15s, .9s
+	/*
+	Example for different transition-durations:
+
+	&.longOpacity .legitRipple-ripple {
+		transition-duration: .15s, .9s*4;
+	}
+	&.longDrop .legitRipple-ripple {
+		transition-duration: .15s*5, .9s;
+		transition-timing-function: linear, cubic-bezier(1, 0, 0.8, 0);
+	}
+	&.longOpacity.longDrop .legitRipple-ripple {
+		transition-duration: .15s*5, .9s*4;
+		transition-timing-function: linear, cubic-bezier(1, 0, 0.8, 0);
+	}
+	*/
+}
+
+// default ripple styling
+.legitRipple-ripple {
+	position: absolute;
+	z-index: -1; // appear behind other elements by default
+	transform: translate(-50%, -50%);
+
+	pointer-events: none; // prevents ripples from being clickable producing
+	                      // more ripples. Additional enhancing feature.
+	                      // Only relevant with overflow: visible; on parent.
+	                      // Not supported by ie10
+	border-radius: 50%;
+	background: rgba(255,255,255,0.4);
+
+	// performance
+	will-change: transform, width, opacity;
+	transform: translate3d(0,0,0);
+
+	// initial values for transition
+	width: 0;
+	opacity: 1;
+
+	transition:
+		width .15s linear, // has to be linear for correct transition speed up
+		                   // on release()
+		opacity .9s ease-out; // Also try: cubic-bezier(1, 0, 0.75, 0.75)
+
+	&:before {
+		// 1:1 aspect ratio
+		content: "";
+		padding-top: 100%;
+		display: block;
+	}
+}
+
+img ~ .legitRipple-ripple {
+	z-index: auto; // ripples should not appear behind images
+	// if the image element is after ripple element, this won't work.
+	// that won't happen, though.
+}
+
+.legitRipple-template {
+	// hide custom ripple template
+	display: none;
+}
+.legitRipple-custom {
+	overflow: hidden;
+	&>* {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		min-width: 100%;
+		min-height: 100%;
+		transform: translate(-50%, -50%);
+	}
+}

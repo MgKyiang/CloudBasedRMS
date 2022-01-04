@@ -1,0 +1,375 @@
+﻿@model List<CloudBasedRMS.Core.ApplicationRole>
+@{
+    ViewBag.Title = "Roles";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+    var searchbyList = new List<SelectListItem>()
+    {
+        new SelectListItem { Text="RoleName", Value = "FullName" },
+        new SelectListItem { Text="CreatedDate",Value = "CreatedDate" },
+        new SelectListItem { Text="UpdatedDate",Value = "UpdatedDate" }
+    };
+}
+
+<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li>
+            <i class="ace-icon fa fa-home home-icon"></i>
+            <a href="#">@Resource.Home</a>
+        </li>
+        <li>
+            <a href="#">@Resource.AdminSetUp</a>
+        </li>
+        <li class="active">@Resource.Roles</li>
+    </ul><!-- /.breadcrumb -->
+</div>
+@*ForShow Message*@
+@if (!string.IsNullOrEmpty(ViewBag.Status))
+{
+    <div class="alert alert-success">
+        @ViewBag.Status
+    </div>
+}
+<p>
+    <a data-toggle="modal" class="actionlink" name="btnCreateLink"  data-target="#dialogCreateRole">Create</a>
+    @*@Html.ActionLink("Create New", "",new { data_toggle = "modal" , data_target = "#dialogCreateRole" })*@
+</p>
+<table class="table">
+    <tr>
+        <th>Action</th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().IsBuildIn)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().CreatedDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().UpdatedDate)
+        </th>
+       
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            <a class="actionlink" id="@item.Id" name="btnEditLink" data-toggle="modal" data-target="#dialogCreateRole" data-rel="tooltip" title="Edit">
+                <span class="green">
+                    <i class="ace-icon fa fa-pencil-square-o bigger-120"></i>
+                </span>
+            </a> |
+            <a class="actionlink" id="@item.Id" name="btnDeleteLink" data-toggle="modal" data-target="#dialogDeletRole" data-rel="tooltip" title="Delete">
+                <span class="red">
+                    <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                </span>
+            </a>
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsBuildIn)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreatedDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UpdatedDate)
+        </td>
+        
+    </tr>
+}
+</table>
+@*Delete Confirmation Dialog*@
+<div id="dialogDeletRole" class="modal wow slideInLeft" role="dialog" style="margin-left:35%;margin-right:35%;margin-top:5%;overflow:hidden;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4>Delete Role</h4>
+        </div>
+        <div class="modal-body">
+            <span id="lblDeleteRoleError" style="color:red;font-weight:bold;"></span>
+            <h4> @Resource.Areyousureyouwanttodeletethis</h4>
+            <input type="submit" id="btnDelete" class="btn btn-success" value="Confirm" />
+            <input type="submit" class="btn btn-danger" data-dismiss="modal" value="Cancel" />
+        </div>
+    </div>
+</div>
+
+    @*Create DialogBox*@
+    <div id="dialogCreateRole" class="modal fade wow slideInLeft" role="dialog" style="margin-left:35%;margin-right:35%;margin-top:5%;overflow:hidden;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 id="dialogHeader">Create Role</h4>
+            </div>
+            <div class="modal-body">
+                <span id="lblMessage" style="color:dodgerblue;font-weight:bold;"></span>
+                <div class="form-group">
+                    @Html.Label("RoleName")
+                    @Html.TextBox("RoleName", string.Empty, new { @class = "form-control", id = "RoleName", required = "required" })
+                    @Html.Hidden("Id")
+                    <span id="errorRoleName" style="color:red;font-weight:bold;"></span>
+                </div>
+                <input id="btnCreateRole" type="submit" class="btn btn-success" value="Create" />
+                <input type="submit" class="btn btn-danger" value="Cancel" data-dismiss="modal" />
+
+            </div>
+        </div>
+    </div>
+<script src="~/assets/js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready()
+        {
+            //Create variables
+            var roleName, Id, state;
+
+            //Create Link Click Event
+            $('a[name="btnCreateLink"]').on('click', function () {
+
+                //change status
+                state = 'create';
+                ChangeButtonState(state);
+
+                //clear control
+                ClearControl();
+
+            });
+
+            //Delete Confirm Button Click Event
+            $('#btnDelete').on('click', function (e) {
+                //call ajax delete post function
+                DeleteRole();
+            });
+
+            //Delete Link Click Event
+            $('a[name="btnDeleteLink"]').on('click', function (e) {
+                Id = $(this).attr('Id');
+                $('#lblDeleteRoleError').text('');
+            });
+
+            //Edit Link Click Event
+            $('a[name="btnEditLink"]').on('click', function (e) {
+                Id = $(this).attr('Id');
+
+                //clear error mesage
+                $('#errorRoleName').text('');
+
+                //change status
+                state = 'edit';
+                ChangeButtonState(state);
+
+                //call ajax getrolebyid function
+                GetRoleById();
+            });
+
+            //CreateRole Button Click Event
+            $('#btnCreateRole').click(function () {
+
+                //BindEntity
+                BindEntity();
+
+                if (state == "create") {
+                    //check validation
+                    if (ValidationRole()) {
+                        //Call Ajax Post Function
+                        CreateRole();
+                    }
+                    else {
+                        //Set Error Message
+                        $('#errorRoleName').text("Require RoleName.");
+                    }
+                }
+                else if (state == "edit") {
+                    if (ValidationUpdateById()) {
+                        //call ajax post update function
+                        UpdateById();
+                    }
+                    else {
+                        //Set Error Message
+                        $('#errorRoleName').text("Require RoleName.");
+                    }
+                }
+
+
+            });
+
+
+            //change button state
+            function ChangeButtonState(state) {
+                switch (state) {
+                    case "create":
+                        $('#btnCreateRole').val('Create');
+                        $('#dialogHeader').text('Create Role');
+                        break;
+                    case "edit":
+                        $('#btnCreateRole').val('Update');
+                        $('#dialogHeader').text('Update Role');
+                        break;
+                    default:
+                        $('#btnCreateRole').val('Create');
+                        $('#dialogHeader').text('Create Role');
+                        break;
+
+                }
+            }
+
+            //clear error message
+            $('#RoleName').focusin(function () {
+                $('#errorRoleName').text("");
+                $('#lblMessage').text('');
+            });
+
+            //validation for create roleName
+            function ValidationRole() {
+                if (roleName == '' || roleName == null || roleName == undefined) {
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+            //end validation roleName
+
+
+            //Ajax Delete Role Function
+            function DeleteRole()
+            {
+                if (Id != '' || Id != null || Id != undefined)
+                {
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'JSON',
+                        url: "@Url.Action("Delete", "Roles", FormMethod.Post)",
+                        data: { Id: Id },
+                        success: function (data)
+                        {
+                            if (data)
+                            {
+                                window.location.reload();
+                            }
+                            else if (data == null) {
+                                $('#lblDeleteRoleError').text("Can't delete buildin Role!");
+                            }
+                            else if(data == false)
+                            {
+                                $('#lblDeleteRoleError').text("An error occurred while processing your request.");
+                            }
+                        },
+                        error: function (data)
+                        {
+                            if (data.error.arguments == null)
+                            {
+                                $('#lblDeleteRoleError').text("Can't delete buildin Role!");
+                            }
+                        }
+                    });
+                }
+            }
+
+            //Ajax Post Functin For Role Create
+            function CreateRole() {
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'JSON',
+                    url: "@Url.Action("Create","Roles",FormMethod.Post)",
+                    data: { RoleName: roleName },
+                    success: function (data) {
+                        if (data) {
+                            window.location.reload();
+                        }
+                        else if (data == false) {
+                            $('#errorRoleName').text("RoleName is already existed!");
+                        }
+                        else {
+                            $('#errorRoleName').text("An error occurred while processing your request.");
+                        }
+                    }
+                });
+            }
+            //end ajax post function
+
+            
+            //Aajx POST UpdatebyId function
+            function UpdateById() {
+                if (ValidationUpdateById()) {
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'JSON',
+                        url: "@Url.Action("Edit", "Roles", FormMethod.Post)",
+                        data: { Id: Id, RoleName: roleName },
+                        success: function (data) {
+                            if (data) {
+                                window.location.reload();
+                            }
+                            else if (data == false) {
+                                $('#errorRoleName').text("RoleName is already existed!");
+                            }
+                            else {
+                                $('#errorRoleName').text("An error occurred while processing your request.");
+                            }
+                        }
+                    });
+                }
+            }
+
+            //validation ajax post updatebyid function
+            function ValidationUpdateById() {
+                if (Id == '' || Id == null || Id == undefined) {
+                    return false;
+                }
+                else if (roleName == '' || roleName == null || roleName == undefined) {
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+
+            //Ajax GetRolebyId function
+            function GetRoleById() {
+                if (ValidationGetRoleById()) {
+                    $.ajax({
+                        type: 'GET',
+                        dataType: 'JSON',
+                        url: "@Url.Action("Edit", "Roles", FormMethod.Get)",
+                        data: { Id: Id },
+                        success: function (data) {
+                            //call bindentity to control function
+                            BindEntityToControl(data);
+                        }
+                    });
+                }
+            }
+
+            //BindEntity
+            function BindEntity() {
+                Id = $('#Id').val();
+                roleName = $('#RoleName').val();
+            }
+
+            //Bind to Control
+            function BindEntityToControl(data) {
+                $('#Id').val(data.Id);
+                $('#RoleName').val(data.RoleName);
+
+            }
+            //Validtion GetRoleById
+            function ValidationGetRoleById() {
+                if (Id == '' || Id == null || Id == undefined) {
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+
+            function ClearControl() {
+                $('#errorRoleName').text('');
+                $('#RoleName').val('');
+                $('#Id').val('');
+                $('#lblMessage').text('');
+            }
+        }
+    </script>

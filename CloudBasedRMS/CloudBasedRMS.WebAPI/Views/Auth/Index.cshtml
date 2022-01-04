@@ -1,0 +1,558 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<h3>WebApi Authorization</h3>
+<hr />
+<div id="divResult"></div>
+<a style="text-decoration:none;cursor:pointer;" id="btnAutoCreateLink" data-toggle="modal" data-target="#dialogAutoCreateProcess">Auto Create Process</a> | <a id="btnManuallyCreateLink" data-toggle="modal" data-target="#dialogCreate">Manualy Create</a>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ApiControllerName</th>
+                <th>ApiActionName</th>
+                <th>RoleName</th>
+                <th>TransactionLog</th>
+                <th>AllowOrDeny</th>
+                <th>CreatedDate</th>
+            </tr>
+        </thead>
+        <tbody id="tblbody">
+            <tr>
+                <td colspan="5" style="text-align:center;color:#0094ff;font-size:14pt;">Please wait ...</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<input type="submit" id="btnSave" class="btn btn-sm btn-success" value="Save" />
+
+@*CreateApiAuthorization Manualy Dialog*@
+<div class="modal fade" role="dialog" id="dialogCreate" style="margin-top:5%;margin-left:35%;margin-right:35%;overflow:auto;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" id="btnManuallyCreateClose" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Create Authorization</h4>
+        </div>
+        <div class="modal-body">
+            <span style="color:red;font-weight:bold" id="errorHeader"></span><br />
+            <div class="form-group">
+                <label>ControllerName</label>
+                <input type="text" required="required" id="txtControllerName" class="form-control" />
+                <span style="color:red;font-weight:bold" id="errorControllerName"></span>
+            </div>
+            <div class="form-group">
+                <label>ActionName</label>
+                <input type="text" required="required" id="txtActionName" class="form-control" />
+                <span style="color:red;font-weight:bold" id="errorActionName"></span>
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox" id="chkTransactionLog" checked="checked" />TransactionLog</label>
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox" id="chkAllowOrDeny" checked="checked" />AllowOrDeny</label>
+            </div>
+
+            <hr />
+            <label><strong>Roles</strong></label><br />
+            <span style="color:red;font-weight:bold" id="errorSummary"></span><br />
+            <ul id="roleList" class="roleList"></ul>
+        </div>
+        <div class="modal-footer">
+            <input type="submit" id="btnManuallyCreate" class="btn btn-success" value="Create" />
+            <input type="submit" id="btnManuallyCancel" data-dismiss="modal" class="btn btn-danger" value="Cancel" />
+        </div>
+    </div>
+</div>
+@*End CreateApiAuthorization Manualy Dialog*@
+
+@*AutoCreateProcess Dialog*@
+<div class="modal fade" role="dialog" id="dialogAutoCreateProcess" style="margin-top:5%;margin-left:15%;margin-right:15%;overflow:auto;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Create Authorization</h4>
+        </div>
+        <div class="modal-body" style="overflow-y:scroll;height:auto;">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ApiControllerName</th>
+                            <th>ActionName</th>
+                            <th>Role</th>
+                            <th>TransactionLog</th>
+                            <th>AllowOrDeny</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tblApiData">
+                        <tr><td colspan="4" style="text-align:center;color:#0094ff;font-size:14pt;">Please wait...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <input type="submit" id="btnAutoCreate" class="btn btn-success" data-dismiss="modal" value="Save" />
+            <input type="submit" id="btnAutoCancel" class="btn btn-danger" data-dismiss="modal" value="Cancel" />
+
+        </div>
+    </div>
+
+</div>
+@*EndAutoCreateProcess Dialog*@
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script type="text/javascript">
+    //document load function
+    $(document).ready(function () {
+
+        //===================================================>
+        //Declare Variables
+        //===================================================>
+        //ApiAuthorizationViewModel List
+        var apiAuthorizationViewModelEntities = [];
+        //ApiAuthorizationViewModel Entity
+        var apiAuthorizationViewModelEntity={};
+        //Roles List
+        var roleEntities = [];
+        //TransactionLogCheckBox and AllowOrDenyCheckBox
+        var transactionLogCheckBox, allowOrDenyCheckBox;
+        //Authorization Header Key
+        var headers = {};
+        //===================================================>
+
+        //===================================================>
+        // Inilitization Page
+        //===================================================>
+        //Set Value From localStorage
+        headers.Authorization = 'Bearer ' + localStorage.getItem('access_token');
+
+        //DataBind ApiAuthorizatin List
+        bindApiAuthorizationList();
+        //===================================================>
+
+        //===================================================>
+        // Event
+        //===================================================>
+        //AutoCreate HiperLink Click Event
+        $('#btnAutoCreateLink').click(function () {
+            //call bindAutoCreateProcess function
+            bindAutoCreateProcess();
+        });
+        //End AutoCreate HiperLink Click Event
+        //===================================================>
+
+        //===================================================>
+        // Event
+        //===================================================>
+        //AutoCreate Save Button Click Event
+        $('#btnAutoCreate').click(function () {
+
+            //$('#dialogAutoCreateProcess').modal('hide');
+
+            //Bind ApiAuthorizationViewModelEntities
+            dataBindApiAuthorizationViewModelEntities();
+
+            var data = JSON.stringify(apiAuthorizationViewModelEntities);
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                crossDomain: true,
+                cache: false,
+                headers: headers,
+                url: '/api/ApiAuthorization/PostAutoCreateApi',
+                data: data,
+                success: function (data) {
+                    if (data) {
+                        bindApiAuthorizationList();
+                        $('#divResult').empty();
+                        $('#divResult').append('<div class="alert alert-success"><strong>Save Successful.</strong></div>');
+                    }
+                },
+                error: function (error) {
+                    $('#divResult').empty();
+                    $('#divResult').append('<div class="alert alert-danger">'+error.responseText+'</div>');
+                }
+            });
+
+        });
+        //===================================================>
+
+        //===================================================>
+        // Event / Manually Dialog Closee Button Click Event
+        //===================================================>
+        $('#btnManuallyCreateClose').click(function () {
+            window.location.reload();
+        });
+        $('#btnManuallyCancel').click(function () {
+            window.location.reload();
+        });
+
+        //===================================================>
+        // Event
+        //===================================================>
+        //Manualy Create HiperLink Click Event
+        $('#btnManuallyCreateLink').click(function () {
+            //call bindRoles Function
+            //Manually Create Entry Form
+            bindRoles();
+
+            //Clear Entry Form
+            clearManuallyEntry();
+        });
+        //===================================================>
+
+        //===================================================>
+        // Event
+        //===================================================>
+        //Manually Save Button Click Event
+        $('#btnManuallyCreate').click(function () {
+            if (validationManuallyCreateEntry()) {
+                dataBindApiAuthorizationViewModelEntity();
+
+                var data = JSON.stringify(apiAuthorizationViewModelEntity);
+
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'JSON',
+                    contentType: 'application/json',
+                    headers: headers,
+                    url: '/api/ApiAuthorization/PostManuallyCreateApi',
+                    data: data,
+                    success: function (data) {
+                        if (data) {
+                            clearManuallyEntry();
+                        }
+                    },
+                    error: function (error) {
+                        $('#errorHeader').text(error.responseText);
+                    }
+                });
+            }
+        });
+
+        //===================================================>
+        // Event Save Button Click Event
+        //===================================================>
+        $('#btnSave').click(function () {
+
+            dataBindApiAuthorizationViewModelEntitiesForSave();
+
+            var data = JSON.stringify(apiAuthorizationViewModelEntities);
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                crossDomain: true,
+                cache: false,
+                headers: headers,
+                url: '/api/ApiAuthorization/Post',
+                data: data,
+                success: function (data) {
+                    if (data) {
+                        bindApiAuthorizationList();
+                        $('#divResult').empty();
+                        $('#divResult').append('<div class="alert alert-success"><strong>Save Successful.</strong></div>');
+                    }
+                },
+                error: function (error) {
+                    $('#divResult').empty();
+                    $('#divResult').append('<div class="alert alert-danger">' + error.responseText + '</div>');
+                }
+            });
+
+        });
+        //===================================================>
+
+        //===================================================>
+        // DELETE LINK BUTTON CLICK EVENT
+        //===================================================>
+        $('a[name="btnDeleteLink"]').click(function () {
+            alert($(this).attr('id'));
+        });
+
+        //===================================================>
+        //Helper Function
+        //===================================================>
+        //Bind Roles List
+        function bindRoles()
+        {
+            roleEntities = [];
+
+            $.ajax({
+                type: 'GET',
+                dataType: 'JSON',
+                headers: headers,
+                url: '/api/ApiAuthorization/GetRoles',
+                success: function (data)
+                {
+                    //clear data
+                    $('#roleList').empty();
+
+                    if (data.length > 0) {
+                        $.each(data, function (index, value) {
+                            $('#roleList').append('<li><div class="checkbox"><label><input type="checkbox" class="checkboxRoles" id="' + value.id + '" />' + value.name + '</label></div></li>');
+                        });
+                    }
+                    else
+                    {
+                        $('#roleList').append('<li>No Record!</li>');
+                    }
+                },
+                error: function (error)
+                {
+                    $('#roleList').empty();
+                    $('#roleList').append('<li>'+error.responseText+'</li>');
+                }
+            });
+        }
+        //===================================================>
+
+        //===================================================>
+        //Helper Function
+        //===================================================>
+        //GET ApiAuthorization List
+        function bindApiAuthorizationList() {
+            $.ajax({
+                type: 'GET',
+                url: '/api/ApiAuthorization/GetByAll',
+                headers: headers,
+                dataType: 'json',
+                success: function (data) {
+                    if (data.length > 0) {
+                        //clear data
+                        $('#tblbody').empty();
+                        $.each(data, function (index, value) {
+                            //checking transactionlog is true or false
+                            if (value.transactionLog) {
+                                transactionLogCheckBox = '<input type="checkbox" class=".transactionlogcheck" checked="checked" />';
+                            }
+                            else {
+                                transactionLogCheckBox = '<input type="checkbox" class=".transactionlogcheck" />';
+                            }
+
+                            //checking allowOrDeny is true or false
+                            if (value.allowOrDeny) {
+                                allowOrDenyCheckBox = '<input type="checkbox" class=".allowordenycheck" checked="checked" />';
+                            }
+                            else {
+                                allowOrDenyCheckBox = '<input type="checkbox" class=".allowordenycheck" />';
+                            }
+
+                            $('#tblbody').append('<tr><td><input type="hidden" value="' + value.apiAuthorizationID + '" />' + value.controllerName + '</td>' +
+                                '<td>' + value.actionName + '</td>' +
+                                '<td><input type="hidden" value="' + value.applicationRole.id+ '" />' + value.applicationRole.name + '</td>' +
+                                '<td>' + transactionLogCheckBox + '</td>' +
+                                '<td>' + allowOrDenyCheckBox + '</td>'+
+                                '<td>' + value.createdDate.slice(0, 10) + '</td>');
+                        });
+                    }
+                    else {
+                        //clear data
+                        $('#tblbody').empty();
+                        $('#tblbody').append(' <tr><td colspan="5" style="text-align:center;color:#0094ff;font-size:14pt;">No Record!</td></tr>');
+                    }
+                },
+                error: function (error)
+                {
+                    //clear data
+                    $('#tblbody').empty();
+                    $('#tblbody').append(' <tr><td colspan="5" style="text-align:center;color:#0094ff;font-size:14pt;">'+error.responseText+'</td></tr>');
+                }
+            });
+        }
+        //END ApiAuthorization List
+        //===================================================>
+
+        //===================================================>
+        //Helper Function
+        //===================================================>
+        //DataBind AutoCreate Process Not Insert Value
+        function bindAutoCreateProcess() {
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                headers: headers,
+                url: '/api/ApiAuthorization/GetApiData',
+                success: function (data) {
+                    if (data.length > 0) {
+
+                        //clear data
+                        $('#tblApiData').empty();
+
+                        $.each(data, function (index, value) {
+
+                            if (value.transactionLog) {
+                                transactionLogCheckBox = '<input type="checkbox" class=".transactionlogAuto" checked="checked" /> ';
+                            }
+                            else {
+                                transactionLogCheckBox = '<input type="checkbox" class=".transactionlogAuto"  /> ';
+                            }
+
+                            if (value.allowOrDeny) {
+                                allowOrDenyCheckBox = '<input type="checkbox" class=".allwOrDenyAuto" checked="checked" /> ';
+                            }
+                            else {
+                                allowOrDenyCheckBox = '<input type="checkbox" class=".allwOrDenyAuto"  /> ';
+                            }
+
+
+                            $('#tblApiData').append('<tr><td>' + value.controllerName + '</td>' +
+                                                    '<td>' + value.actionName + '</td>' +
+                                                     '<td><input type="hidden" value="' + value.roleID + '" />' + value.roleName + '</td>' +
+                                                    '<td>' + transactionLogCheckBox + '</td>' +
+                                                    '<td>' + allowOrDenyCheckBox + '</td></tr>');
+
+                        });
+                    }
+                    else {
+                        $('#tblApiData').empty();
+                        $('#tblApiData').append(' <tr><td colspan="4" style="text-align:center;color:#0094ff;font-size:14pt;">No Record!</td></tr>');
+                    }
+                },
+                error: function (error) {
+
+                }
+
+            });
+        }
+        //end DataBind AutoCreate Process Not Insert Value
+
+        //===================================================>
+        //Helper Function
+        //===================================================>
+        //Entiteis DataBind For AutoCreateProcess Save
+        function dataBindApiAuthorizationViewModelEntities() {
+            apiAuthorizationViewModelEntities = [];
+
+            $('#tblApiData tr').each(function (index, value) {
+
+                var apiAuthorizationViewModelEntity = {};
+
+                var $td = $(this).find('td');
+
+                apiAuthorizationViewModelEntity.ControllerName = $td.eq(0).text();
+                apiAuthorizationViewModelEntity.ActionName = $td.eq(1).text();
+                apiAuthorizationViewModelEntity.RoleID = $td.eq(2).find('input[type="hidden"]').val();
+                apiAuthorizationViewModelEntity.RoleName = $td.eq(2).text();
+                apiAuthorizationViewModelEntity.TransactionLog = $td.eq(3).find('input[type="checkbox"]').is(':checked') ? true : false;
+                apiAuthorizationViewModelEntity.AllowOrDeny = $td.eq(4).find('input[type="checkbox"]').is(':checked') ? true : false;
+
+                //Add to Array
+                apiAuthorizationViewModelEntities.push(apiAuthorizationViewModelEntity);
+
+            });
+        }
+        function dataBindApiAuthorizationViewModelEntitiesForSave()
+        {
+            apiAuthorizationViewModelEntities = [];
+
+            $('#tblbody tr').each(function (index, value) {
+
+                var apiAuthorizationViewModelEntity = {};
+
+                var $td = $(this).find('td');
+
+                apiAuthorizationViewModelEntity.ID = $td.eq(0).find('input[type="hidden"]').val();
+                apiAuthorizationViewModelEntity.ControllerName = $td.eq(0).text();
+                apiAuthorizationViewModelEntity.ActionName = $td.eq(1).text();
+                apiAuthorizationViewModelEntity.RoleID = $td.eq(2).find('input[type="hidden"]').val();
+                apiAuthorizationViewModelEntity.RoleName = $td.eq(2).text();
+                apiAuthorizationViewModelEntity.TransactionLog = $td.eq(3).find('input[type="checkbox"]').is(':checked') ? true : false;
+                apiAuthorizationViewModelEntity.AllowOrDeny = $td.eq(4).find('input[type="checkbox"]').is(':checked') ? true : false;
+
+                //Add to Array
+                apiAuthorizationViewModelEntities.push(apiAuthorizationViewModelEntity);
+
+            });
+        }
+        //End Bind ApiAuthorizationViewModel
+
+        //===================================================>
+        //Helper Function
+        //===================================================>
+        //DataBind ApiAuthorizationViewModel Entity
+        function dataBindApiAuthorizationViewModelEntity()
+        {
+            apiAuthorizationViewModelEntity = {};
+
+            if (validationManuallyCreateEntry())
+            {
+                apiAuthorizationViewModelEntity.ControllerName = $('#txtControllerName').val();
+                apiAuthorizationViewModelEntity.ActionName = $('#txtActionName').val();
+                apiAuthorizationViewModelEntity.TransactionLog = $('#chkTransactionLog').is(':checked') ? true : false;
+                apiAuthorizationViewModelEntity.AllowOrDeny = $('#chkAllowOrDeny').is(':checked') ? true : false;
+                apiAuthorizationViewModelEntity.RolesId = [];
+
+                $('.checkboxRoles:checked').each(function () {
+                    apiAuthorizationViewModelEntity.RolesId.push($(this).attr('id'));
+                });
+            }
+
+        }
+        //===================================================>
+
+        //===================================================>
+        //Helper Function
+        //===================================================>
+        //Clear Entiry Form
+        function clearManuallyEntry()
+        {
+            $('#txtControllerName').val('');
+            $('#errorControllerName').text('');
+            $('#txtActionName').val('');
+            $('#errorActionName').text('');
+            $('#errorSummary').text('');
+            $('#errorHeader').text('');
+        }
+
+        //===================================================>
+        //Validation Function
+        //===================================================>
+        function validationManuallyCreateEntry()
+        {
+            if ($('#txtControllerName').val() == '' || $('#txtControllerName').val() == null)
+            {
+                $('#errorControllerName').text('Require ControllerName.');
+                return false;
+            }
+            else if ($('#txtActionName').val() == '' || $('#txtActionName').val() == null) {
+                $('#errorActionName').text('Require ActionName.');
+                return false;
+            }
+            var roleList = $('.checkboxRoles:checked');
+
+            if (roleList.length < 0 || roleList.length == 0)
+            {
+                $('#errorSummary').text('Require Role.');
+
+                return false;
+            }
+            return true;
+        }
+    });
+    //end document load function
+</script>
+<style type="text/css">
+    a:hover {
+        color: #ff6a00;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .close:hover {
+        color: #ff6a00;
+    }
+
+    .checkbox:hover {
+        cursor: pointer;
+    }
+
+    .roleList ul li {
+        list-style: none;
+    }
+</style>
+

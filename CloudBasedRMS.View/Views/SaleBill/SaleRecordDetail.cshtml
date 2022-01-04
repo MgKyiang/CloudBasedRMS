@@ -1,0 +1,28 @@
+﻿@model IEnumerable<CloudBasedRMS.Core.SaleBill>
+@using GridMvc.Html
+@{
+    ViewBag.Title = "Sale Record Details";
+   Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+
+<h2>Sale Record Details</h2>
+
+<link href="@Url.Content("~/Content/Gridmvc.css")" rel="stylesheet" />
+<script src="@Url.Content("~/assets/js/jquery-3.1.1.min.js")"></script>
+<script src="@Url.Content("~/Scripts/gridmvc.min.js")"></script>
+<div class="code-cut">
+    @Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(c => c.SaleBillNo).Titled("Sale Bill No").Filterable(true);
+    columns.Add(c => c.SaleBillDate).Titled("Sale Bill Date").Filterable(true);
+    columns.Add(c => c.Employee.Name).Titled("Cashier Name").Filterable(true);
+    columns.Add(c => c.Customer.Name).Titled("CustomerName").Filterable(true);
+    columns.Add(c => c.Amount).Titled("Sale Amount").Filterable(true);
+    columns.Add()
+    .Encoded(false)
+    .Sanitized(false)
+    .SetWidth(30)
+    .RenderValueAs(o => Html.ActionLink("Edit", "Edit", new { id = o.SaleBillID }));
+
+}).WithPaging(10).Sortable(true)
+</div>

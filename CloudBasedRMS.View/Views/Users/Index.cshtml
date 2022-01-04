@@ -1,0 +1,446 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@model IPagedList<CloudBasedRMS.View.Controllers.ViewModel.UserViewModel>
+@{
+    ViewBag.Title = "Users";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+    var searchbyList = new List<SelectListItem>()
+    {
+        new SelectListItem { Text=Resource.FullName, Value = "FullName" },
+        new SelectListItem { Text=Resource.UserName,Value = "UserName" },
+        new SelectListItem { Text=Resource.Email,Value = "Email" },
+        new SelectListItem { Text="PasswordQuestion",Value = "PasswordQuestion" },
+        new SelectListItem { Text="PasswordAnswer",Value = "PasswordAnswer" },
+        new SelectListItem { Text=Resource.RoleName,Value = "RoleName" },
+        new SelectListItem { Text="CreatedDate",Value = "CreatedDate" },
+        new SelectListItem { Text="UpdatedDate",Value = "UpdatedDate" }
+    };
+}
+<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li>
+            <i class="ace-icon fa fa-home home-icon"></i>
+            <a href="#">@Resource.Home</a>
+        </li>
+        <li>
+            <a href="#">@Resource.AdminSetUp</a>
+        </li>
+        <li class="active">@Resource.Users</li>
+    </ul><!-- /.breadcrumb -->
+</div>
+@*Create/Update/Delete Status*@
+@if (!string.IsNullOrEmpty(ViewBag.Status))
+{
+    <div class="alert alert-success">
+        <label>@ViewBag.Status</label>
+    </div>
+}
+    @*Searching Result*@
+    @if (!string.IsNullOrEmpty(ViewBag.SearchBy) && !string.IsNullOrEmpty(ViewBag.Search))
+    {
+        <div class="alert alert-success">
+
+            <ul>
+                <li><label>@Resource.SearchBy : @ViewBag.SearchBy</label></li>
+                <li><label>@Resource.SearchValue : @ViewBag.Search</label></li>
+            </ul>
+        </div>
+    }
+    @*Searching Status*@
+    @if ((!string.IsNullOrEmpty(ViewBag.Searchby1) && !string.IsNullOrEmpty(ViewBag.Search1)) ||
+                         (!string.IsNullOrEmpty(ViewBag.Searchby2) && !string.IsNullOrEmpty(ViewBag.Search2)) ||
+                         (!string.IsNullOrEmpty(ViewBag.Searchby3) && !string.IsNullOrEmpty(ViewBag.Search3)) ||
+                         (!string.IsNullOrEmpty(ViewBag.Searchby4) && !string.IsNullOrEmpty(ViewBag.Search4)))
+    {
+        <div class="alert alert-success">
+            <ul>
+
+                @if (!string.IsNullOrEmpty(ViewBag.Searchby1) && !string.IsNullOrEmpty(ViewBag.Search1))
+                {
+                    <li>@Resource.SearchBy @ViewBag.Searchby1 : @ViewBag.Search1</li>
+                }
+
+                @if (!string.IsNullOrEmpty(ViewBag.Searchby2) && !string.IsNullOrEmpty(ViewBag.Search2))
+                {
+                    <li>@Resource.SearchBy @ViewBag.Searchby2 : @ViewBag.Search2</li>
+                }
+
+                @if (!string.IsNullOrEmpty(ViewBag.Searchby3) && !string.IsNullOrEmpty(ViewBag.Search3))
+                {
+                    <li>@Resource.SearchBy @ViewBag.Searchby3 : @ViewBag.Search3</li>
+                }
+
+                @if (!string.IsNullOrEmpty(ViewBag.Searchby4) && !string.IsNullOrEmpty(ViewBag.Search4))
+                {
+                    <li>@Resource.SearchBy @ViewBag.Searchby4 : @ViewBag.Search4</li>
+                }
+
+            </ul>
+        </div>
+    }
+@*Searching Panel*@
+@using (Html.BeginForm("Index", "Users", FormMethod.Get))
+{
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <a id="filter"><strong>@Resource.Filter</strong></a> <span id="filterspan" class="glyphicon glyphicon-chevron-down"></span>
+            | @Html.ActionLink(Resource.Reload, "Index")
+        </div>
+        <div id="filtercollapse" style="display:none;" class="panel-body">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.Label(Resource.SearchBy)
+                        @Html.DropDownList("searchby1", searchbyList, "-- Select One --", new { @class = "form-control", id = "searchby" })
+                    </div>
+                    <div class="form-group">
+                        @Html.TextBox("search1", string.Empty, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.Label(Resource.SearchBy)
+                        @Html.DropDownList("searchby2", searchbyList, "-- Select One --", new { @class = "form-control", id = "searchby" })
+                    </div>
+                    <div class="form-group">
+                        @Html.TextBox("search2", string.Empty, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.Label(Resource.SearchBy)
+                        @Html.DropDownList("searchby3", searchbyList, "-- Select One --", new { @class = "form-control", id = "searchby" })
+                    </div>
+                    <div class="form-group">
+                        @Html.TextBox("search3", string.Empty, new { @class = "form-control", id = "searchby" })
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        @Html.Label(Resource.SearchBy)
+                        @Html.DropDownList("searchby4", searchbyList, "-- Select One --", new { @class = "form-control" })
+                    </div>
+                    <div class="form-group">
+                        @Html.TextBox("search4", string.Empty, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
+            <input type="submit" value="@Resource.Search" class="btn btn-success" />
+
+        </div>
+    </div>
+}
+<p>
+    @Html.ActionLink(Resource.Create, "Create")
+</p>
+<table class="table table-responsive">
+    <tr>
+        <th>Action</th>
+        <th>
+            @Html.ActionLink(Resource.FullName, "index", new { sortby = ViewBag.FullNameSortby, searchby1 = Request.QueryString["searchby1"], search1 = Request.QueryString["search1"], searchby2 = Request.QueryString["searchby2"], search2 = Request.QueryString["search2"], searchby3 = Request.QueryString["searchby3"], search3 = Request.QueryString["search3"], searchby4 = Request.QueryString["searchby4"], search4 = Request.QueryString["search4"] })
+        </th>
+        <th>
+            @Html.ActionLink(Resource.UserName, "index", new { sortby = ViewBag.UserNameSortby, searchby1 = Request.QueryString["searchby1"], search1 = Request.QueryString["search1"], searchby2 = Request.QueryString["searchby2"], search2 = Request.QueryString["search2"], searchby3 = Request.QueryString["searchby3"], search3 = Request.QueryString["search3"], searchby4 = Request.QueryString["searchby4"], search4 = Request.QueryString["search4"] })
+        </th>
+        <th>
+            @Html.ActionLink(Resource.Email, "index", new { sortby = ViewBag.EmailSortby, searchby1 = Request.QueryString["searchby1"], search1 = Request.QueryString["search1"], searchby2 = Request.QueryString["searchby2"], search2 = Request.QueryString["search2"], searchby3 = Request.QueryString["searchby3"], search3 = Request.QueryString["search3"], searchby4 = Request.QueryString["searchby4"], search4 = Request.QueryString["search4"] })
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().PasswordQuestion)
+        </th>
+        
+        <th>
+            @Html.ActionLink(Resource.RoleName, "index", new { sortby = ViewBag.RoleNameSortby, searchby1 = Request.QueryString["searchby1"], search1 = Request.QueryString["search1"], searchby2 = Request.QueryString["searchby2"], search2 = Request.QueryString["search2"], searchby3 = Request.QueryString["searchby3"], search3 = Request.QueryString["search3"], searchby4 = Request.QueryString["searchby4"], search4 = Request.QueryString["search4"] })
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().CreatedDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().UpdatedDate)
+        </th>
+      
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                <a name="btnAssignRole" style="cursor:pointer;text-decoration:none;" id="@item.Id" data-toggle="modal" data-target="#dialog" class="tooltip-success" data-rel="tooltip" title="AssignRole">
+                    <span class="green">
+                        <i class="ace-icon fa fa-home bigger-120"></i>
+                    </span>
+                </a> |
+                <a href="@Url.Action("Edit", "Users", new { id = item.Id })" class="tooltip-success" data-rel="tooltip" title="Edit">
+                    <span class="green">
+                        <i class="ace-icon fa fa-pencil-square-o bigger-120"></i>
+                    </span>
+                </a> |
+                <a name="btnDelete" style="cursor:pointer;text-decoration:none;" id="@item.Id" data-toggle="modal" data-target="#DeleteConfirmDialog" class="tooltip-success" data-rel="tooltip" title="Delete">
+                    <span class="red">
+                        <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                    </span>
+                </a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PasswordQuestion)
+            </td>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.RoleName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdatedDate)
+            </td>
+            
+        </tr>
+    }
+
+</table>
+@Html.PagedListPager(Model,
+    page => Url.Action("Index", new { searchby1 = Request.QueryString["searchby1"], search1 = Request.QueryString["search1"], searchby2 = Request.QueryString["searchby2"], search2 = Request.QueryString["search2"], searchby3 = Request.QueryString["searchby3"], search3 = Request.QueryString["search3"], searchby4 = Request.QueryString["searchby4"], search4 = Request.QueryString["search4"], sortby = Request["sortby"], page }),
+    new PagedListRenderOptions { Display = PagedListDisplayMode.IfNeeded, DisplayItemSliceAndTotal = true })
+@*UserAssignRole DialogBox*@
+<div id="dialog" class="modal fade" role="dialog" style="margin-left:35%;margin-right:35%;margin-top:5%;overflow:hidden;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4>Assign Role</h4>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label id="labUserName">@Resource.UserName</label>
+                <input id="txtUserName" type="text"  disabled="disabled" />
+                <input id="userId" type="hidden" />
+            </div>
+            <div class="form-group">
+                <label>@Resource.RoleName</label>
+                  <ul id="rolesUl" style="list-style:none;padding:5px;"></ul>
+                </div>
+
+            <input id="btnAddtoRole" type="submit" class="btn btn-success" value="Assign Role" />
+            <input type="submit" class="btn btn-danger" value="Cancel" data-dismiss="modal" />
+        </div>
+    </div>
+</div>
+@*EndUserAssignRole DialogBox*@
+
+@*Delete Confirmation DialogBox*@
+<div class="modal fade" id="DeleteConfirmDialog" role="dialog" style="margin-left:35%;margin-right:35%;margin-top:5%;overflow:hidden;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4>Delete Confirmation</h4>
+        </div>
+        <div class="modal-body">
+            <h4>@Resource.Areyousureyouwanttodeletethis</h4>
+            <input type="submit" id="btnDeleteConfirm" value="Confirm" class="btn btn-success" />
+            <input type="submit" id="btnDeleteCancel" data-dismiss="modal" value="Cancel" class="btn btn-danger" />
+        </div>
+    </div>
+</div>
+@*End Delete Confirmation DialogBox*@
+<script src="~/Scripts/jquery-1.12.4.min.js"></script>
+<script type="text/javascript">
+    $(document).ready()
+    {
+        //Create Global Variables
+        var userId, roleId;
+        var roles = [];
+
+        //=================================================
+        //Start Role Assign
+        //=================================================
+
+        //RoleAssign link click event
+        $('a[name="btnAssignRole"]').click(function () {
+
+            userId = $(this).attr('id');
+
+            //call ajax get function
+            GetUserandRoles();
+        });
+
+        //roleassign button click event => for save
+        $('#btnAddtoRole').click(function () {
+
+            //BindEntity
+            BindEntity();
+
+            if (userId != '' && userId != undefined && userId != null && roleId != '' && roleId != undefined && roleId != null) {
+                //call ajax post function
+                PostUserandRole();
+            }
+        });
+        //BindEntity
+        function BindEntity() {
+            roleId = $('input[type="radio"]:checked').attr('id');
+        }
+
+        //AJAX POST Function For RoleAssing Saving
+        function PostUserandRole() {
+            $.ajax({
+                type: 'POST',
+                dataType: 'JSON',
+                url: "@Url.Action("AssignRole", "Users")",
+                data: { userId: userId, roleId: roleId },
+                success: function (data) {
+                    //clean variables
+                    userId = '';
+                    roleId = '';
+
+                    if (data) {
+                        //reload page
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+
+        //AJAX GET Function
+        function GetUserandRoles() {
+            $.ajax({
+                url: "@Url.Action("AssignRole", "Users")",
+                type: "GET",
+                data: { userId: userId },
+                dataType: 'JSON',
+                success: function (data) {
+                    //call bindEntity function
+                    BindEntityToControl(data);
+                }
+            });
+        }
+
+        //BindEntity To Control
+        function BindEntityToControl(data) {
+            //Set UserName
+            $('#txtUserName').val(data.ApplicationUser.UserName);
+            $('#userId').val(data.ApplicationUser.Id);
+            //set value userid variables
+            userId = data.ApplicationUser.Id;
+
+            //get roles array
+            roles = data.ApplicationRoles;
+
+            //get ul
+            var ul = $('#rolesUl');
+
+            //clear content
+            ul.empty();
+
+            $.each(roles, function (index, value) {
+                //append data
+                var li = '<li style="display:inline;padding:5px;margin-right:5px;"><label><input type="radio"  name="roles"  id="' + value.Id + '" value="" />' + value.Name + '</label></li>';
+
+                ul.append(li);
+            });
+        }
+        //=================================================
+        //End Role Assign
+        //=================================================
+
+
+        //=================================================
+        // Delete Confirmation
+        //=================================================
+
+        //Delete Link  Click Event
+        $('a[name="btnDelete"]').on('click', function (e) {
+            userId = $(this).attr('id');
+            e.preventDefault();
+        });
+
+        //Delete Confirm Button Click Event
+        $('#btnDeleteConfirm').on('click', function () {
+
+            if (userId != '' || userId != null || userId != undefined) {
+                //call delete ajax post function
+                DeleteUser(userId);
+
+                $('#DeleteConfirmDialog').modal('toggle');
+            }
+        });
+
+        //Delete Ajax Post Function
+        function DeleteUser(userId) {
+            $.ajax({
+                type: 'POST',
+                dataType: 'JSON',
+                url: "@Url.Action("Delete","Users")",
+                data: { Id: userId },
+                success: function (data) {
+                    if (data) {
+                        location.reload();
+                    }
+                }
+            });
+        }
+
+
+        //Searching Panel
+        $('select').val('');
+        $('input[type="text"]').val('');
+
+        //Searchby Dropdown Change Event
+        $('select').change(function () {
+
+            //currenc select value
+            var value = $(this).val();
+            //current select name
+            var search = $(this).attr('name');
+            //convert to search textbox name
+            search = search.replace('searchby', 'search');
+
+            if (value == '' || value == null || value == undefined) {
+                $('input[name="' + search + '"]').val('');
+            }
+
+            if (value == 'CreatedDate') {
+
+                var regex = "\\d[1-12]{1,2}/\\d[1-31]{1,2}/\\d{4}";
+                $('input[name="' + search + '"]').attr('placeholder', 'MM/DD/YYYY');
+                $('input[name="' + search + '"]').attr('pattern', regex);
+            }
+            else {
+                $('input[name="' + search + '"]').removeAttr('placeholder');
+                $('input[name="' + search + '"]').removeAttr('pattern');
+            }
+
+        });
+
+        $('#filter').on('click', function () {
+
+            if ($('#filterspan').hasClass('glyphicon glyphicon-chevron-down')) {
+
+                $('#filterspan').removeClass('glyphicon glyphicon-chevron-down');
+
+                $('#filterspan').addClass('glyphicon glyphicon-chevron-up');
+
+                $('#filtercollapse').css("display", "block");
+
+            }
+            else {
+
+                $('#filterspan').removeClass('glyphicon glyphicon-chevron-up');
+
+                $('#filterspan').addClass('glyphicon glyphicon-chevron-down');
+
+                $('#filtercollapse').css("display", "none");
+
+            }
+        })
+    }
+</script>

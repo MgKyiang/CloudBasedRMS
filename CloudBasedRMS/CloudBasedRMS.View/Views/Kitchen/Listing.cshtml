@@ -1,0 +1,54 @@
+﻿@model IEnumerable<CloudBasedRMS.Core.Kitchen>
+@{
+    ViewBag.Title = "Listing";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li>
+            <i class="ace-icon fa fa-home home-icon"></i>
+            <a href="#">@Resource.Home</a>
+        </li>
+
+        <li>
+            <a href="#">@Resource.Kitchen</a>
+        </li>
+        <li class="active">Listing</li>
+    </ul><!-- /.breadcrumb -->
+</div>
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.KitchenName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.KitchenDescription)
+        </th>
+        <th>
+          Responsitility Staff Name
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.KitchenName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.KitchenDescription)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Employee.Name)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.KitchenID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.KitchenID })
+        </td>
+    </tr>
+}
+
+</table>
