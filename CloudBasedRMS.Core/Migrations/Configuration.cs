@@ -1,5 +1,6 @@
 namespace CloudBasedRMS.Core.Migrations
 {
+    using CloudBasedRMS.Core.SeedConfig;
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
@@ -14,18 +15,11 @@ namespace CloudBasedRMS.Core.Migrations
 
         protected override void Seed(CloudBasedRMS.Core.ApplicationDbContext context)
         {
-            //  This method will be called after migrating to the latest version.
-
-            //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
-            //  to avoid creating duplicate seed data. E.g.
-            //
-            //    context.People.AddOrUpdate(
-            //      p => p.FullName,
-            //      new Person { FullName = "Andrew Peters" },
-            //      new Person { FullName = "Brice Lambson" },
-            //      new Person { FullName = "Rowan Miller" }
-            //    );
-            //
+            //Default Admin/User Account and Roles
+            IdentitySeed.SeedData(context);
+            Authorizationseed.SeedData(context);
+            //Default ApplicationSetting Data
+            ApplicationSettingSeed.SeedData(context);
         }
     }
 }

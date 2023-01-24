@@ -1,9 +1,9 @@
 # CloudBasedRMS
-Cloud-Based Restaurant Management System
+- Cloud-Based Restaurant Management System
 #Functional architecture
-1)
-2)
-3)
+-user authentication and authentication 
+-ordering foods
+-menu information 
 #System flowchart
-#image
-#Technology Overview
+- image
+- Technology Overview

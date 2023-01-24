@@ -1,7 +1,7 @@
 ﻿For Database Migration with Code First Apporach
 1)Enable-Migrations -Force
 2)Add-Migraiton [migration name]
-3)Update-database
+3)Update-database -verbose
 ------------------------------------------------------------------------------------------------------
 For Seeding Configuration!
 Fill this Code inside of [namespace CloudBasedRMS.Core.Migrations]{}
@@ -30,4 +30,4 @@ IdentityUserManager.Users
 					  .Where(u => u.Id == userId)
 					  .SelectMany(u => u.Roles)
 					  .Join(IdentityRoleManager.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => r)
-					  .ToList();
+					  .ToList();//

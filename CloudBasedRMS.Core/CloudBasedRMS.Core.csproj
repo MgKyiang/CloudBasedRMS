@@ -125,9 +125,9 @@
     <Compile Include="IdentityModel\SmsService.cs" />
     <Compile Include="IdentityModel\UserInRole.cs" />
     <Compile Include="IdentityModel\UsersMember.cs" />
-    <Compile Include="Migrations\201712281532081_erdchange.cs" />
-    <Compile Include="Migrations\201712281532081_erdchange.Designer.cs">
-      <DependentUpon>201712281532081_erdchange.cs</DependentUpon>
+    <Compile Include="Migrations\202301240654092_initialCode.cs" />
+    <Compile Include="Migrations\202301240654092_initialCode.Designer.cs">
+      <DependentUpon>202301240654092_initialCode.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -146,8 +146,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201712281532081_erdchange.resx">
-      <DependentUpon>201712281532081_erdchange.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202301240654092_initialCode.resx">
+      <DependentUpon>202301240654092_initialCode.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

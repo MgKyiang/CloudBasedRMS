@@ -63,8 +63,8 @@
                                 <div id="user-profile-1" class="user-profile row">
                                     <div class="col-xs-12 col-sm-3 center">
                                         <div>
-                                            <span class="profile-picture">
-                                                @if (Model.UsersMember.MemberStatus == "e")
+                                            <span class="profile-picture"> 
+                                                @if (Model.UsersMember.MemberStatus !=null || Model.UsersMember.MemberStatus == "e")
                                                 {
                                                 <img id="avatar" class="editable img-responsive" alt="@Model.Employee.Name" src="@Url.Content(Model.Employee.ImagePath)" />
                                                 }
@@ -79,7 +79,7 @@
                                                     <a href="#" class="user-title-label dropdown-toggle" data-toggle="dropdown">
                                                         <i class="ace-icon fa fa-circle light-green"></i>
                                                         &nbsp;
-                                                       @if (Model.UsersMember.MemberStatus == "e")
+                                                       @if (Model.UsersMember.MemberStatus.Equals("e"))
                                                        {<span class="white">@Model.Employee.Name</span>}
                                                        else
                                                        { <span class="white">@Model.Customer.Name</span>}
