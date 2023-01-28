@@ -1,9 +1,9 @@
 # CloudBasedRMS
 - This is Cloud-Based Restaurant Management System to manage the restaurant via web application.
 # Database Migration commands with Code First Apporach
-1)Enable-Migrations -Force
-2)Add-Migraiton [migration name]
-3)Update-database -verbose
+- Enable-Migrations -Force
+- Add-Migraiton [migration name]
+- Update-database -verbose
 # Functional Capabilities 
 - User authentication and authorization- Role Management 
 - Ordering Menus
