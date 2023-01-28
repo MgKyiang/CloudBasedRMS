@@ -8,7 +8,7 @@ namespace CloudBasedRMS.GenericRepositories
     {
         public ApplicationDbContext ApplicationDbContext
         {
-            get { return dbContext as ApplicationDbContext; }
+            get { return _dbContext as ApplicationDbContext; }
         }
         public ApplicationSettingRepository(ApplicationDbContext _dbContext) : base(_dbContext)
         {

@@ -9,10 +9,8 @@ namespace CloudBasedRMS.GenericRepositories
 {
   public class BillFoodItemsRepository:Repository<BillFoodItems>,IBillFoodItemsRepository
     {
-        public ApplicationDbContext ApplicationDbContext
-        {
-            get { return dbContext as ApplicationDbContext; }
-        }
+        public ApplicationDbContext ApplicationDbContext{ get { return _dbContext as ApplicationDbContext; }}
+
         public BillFoodItemsRepository(ApplicationDbContext _dbContext) : base(_dbContext)
         {
         }

@@ -7,7 +7,7 @@ namespace CloudBasedRMS.GenericRepositories
     public   class AddressRepository:Repository<Address>,IAddressRepository
     {
         public ApplicationDbContext ApplicationDbContext{
-            get { return dbContext as ApplicationDbContext; }
+            get { return _dbContext as ApplicationDbContext; }
         }
         public AddressRepository(ApplicationDbContext _dbContext) : base(_dbContext){
         }

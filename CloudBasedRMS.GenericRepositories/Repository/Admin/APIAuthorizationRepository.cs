@@ -11,7 +11,7 @@ namespace CloudBasedRMS.GenericRepositories
     {
         public ApplicationDbContext AppDbContext
         {
-            get { return dbContext as ApplicationDbContext; }
+            get { return _dbContext as ApplicationDbContext; }
         }
         public APIAuthorizationRepository(ApplicationDbContext _dbContext) : base(_dbContext)
         {

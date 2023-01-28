@@ -9,11 +9,11 @@ namespace CloudBasedRMS.GenericRepositories
     //class [ClassName]<TEntity>:IRepository<Tentity> where TEntity :class
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        protected readonly DbContext dbContext;
+        protected readonly DbContext _dbContext;
 
-        public Repository(DbContext _dbContext)
+        public Repository(DbContext dbContext)
         {
-            this.dbContext = _dbContext;
+            this._dbContext = dbContext;
         }
         /// <summary>
         /// Insert Entity[model]
@@ -23,7 +23,7 @@ namespace CloudBasedRMS.GenericRepositories
         {
             try
             {
-                dbContext.Set<TEntity>().Add(entity);
+                _dbContext.Set<TEntity>().Add(entity);
                 return true;
             }
             catch (Exception e)
@@ -39,7 +39,7 @@ namespace CloudBasedRMS.GenericRepositories
         {
             try
             {
-                dbContext.Set<TEntity>().AddRange(entities);
+                _dbContext.Set<TEntity>().AddRange(entities);
                 return true;
             }
             catch (Exception e)
@@ -57,7 +57,7 @@ namespace CloudBasedRMS.GenericRepositories
         {
             try
             {
-                return dbContext.Set<TEntity>().Where(predicate);
+                return _dbContext.Set<TEntity>().Where(predicate);
             }
             catch (Exception e)
             {
@@ -72,7 +72,7 @@ namespace CloudBasedRMS.GenericRepositories
         {
             try
             {
-                return dbContext.Set<TEntity>();
+                return _dbContext.Set<TEntity>();
             }
             catch (Exception e)
             {
@@ -89,7 +89,7 @@ namespace CloudBasedRMS.GenericRepositories
         {
             try
             {
-                IQueryable<TEntity> query = dbContext.Set<TEntity>();
+                IQueryable<TEntity> query = _dbContext.Set<TEntity>();
 
                 foreach (string includeProperty in Includes)
                 {
@@ -112,7 +112,7 @@ namespace CloudBasedRMS.GenericRepositories
         {
             try
             {
-                return dbContext.Set<TEntity>().Find(ID);
+                return _dbContext.Set<TEntity>().Find(ID);
             }
             catch (Exception e)
             {
@@ -127,7 +127,7 @@ namespace CloudBasedRMS.GenericRepositories
         {
             try
             {
-                dbContext.Set<TEntity>().Remove(entity);
+                _dbContext.Set<TEntity>().Remove(entity);
                 return true;
             }
             catch (Exception e)
@@ -145,7 +145,7 @@ namespace CloudBasedRMS.GenericRepositories
         {
             try
             {
-                dbContext.Set<TEntity>().RemoveRange(entities);
+                _dbContext.Set<TEntity>().RemoveRange(entities);
                 return true;
             }
             catch (Exception e)
@@ -163,7 +163,7 @@ namespace CloudBasedRMS.GenericRepositories
         {
             try
             {
-                return dbContext.Set<TEntity>().SingleOrDefault(predicate);
+                return _dbContext.Set<TEntity>().SingleOrDefault(predicate);
             }
             catch (Exception e)
             {
@@ -178,7 +178,7 @@ namespace CloudBasedRMS.GenericRepositories
         {
             try
             {
-                dbContext.Entry(entity).State = EntityState.Modified;
+                _dbContext.Entry(entity).State = EntityState.Modified;
                 return true;
             }
             catch (Exception e)
